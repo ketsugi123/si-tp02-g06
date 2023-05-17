@@ -24,6 +24,8 @@ import model.*;
  */
 public class BLService 
 {
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("si-tp02-g06");
+    EntityManager em = emf.createEntityManager();
     //@SuppressWarnings("unchecked")
 	public void test1() throws Exception
     { }
