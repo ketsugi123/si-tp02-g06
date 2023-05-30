@@ -33,10 +33,21 @@ public class Jogo implements Serializable {
     public List<Cracha> getCrachas() {
         return crachas;
     }
-
     public void addCracha(Cracha cracha){
         this.crachas.add(cracha);
     }
+
+    @OneToMany(mappedBy = "partida", cascade = CascadeType.PERSIST)
+    private List<Partida> partidas = new ArrayList<>();
+
+    public List<Partida> getPartidas() {
+        return partidas;
+    }
+
+    public void addPartida(Partida partida){
+        partidas.add(partida);
+    }
+
     public String getId(){ return this.id; }
     public String getNome(){ return this.nome; }
     public void setNome(String nome) { this.nome = nome; }
