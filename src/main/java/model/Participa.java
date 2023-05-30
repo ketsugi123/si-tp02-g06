@@ -9,12 +9,14 @@ public class Participa {
     @EmbeddedId
     ParticipaId id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("id")
+    @JoinColumn(name="id")
     private Jogador jogador;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("id")
+    @JoinColumn(name="id")
     private Conversa conversa;
 
 

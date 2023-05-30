@@ -27,6 +27,16 @@ public class Jogo implements Serializable {
 
     public List<Compra> getCompras() { return compras; }
 
+    @OneToMany(mappedBy = "crachá" ,cascade = CascadeType.PERSIST)
+    private List<Cracha> crachas = new ArrayList<>();
+
+    public List<Cracha> getCrachas() {
+        return crachas;
+    }
+
+    public void addCracha(Cracha cracha){
+        this.crachas.add(cracha);
+    }
     public String getId(){ return this.id; }
     public String getNome(){ return this.nome; }
     public void setNome(String nome) { this.nome = nome; }

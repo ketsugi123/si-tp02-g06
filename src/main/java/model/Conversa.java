@@ -20,10 +20,22 @@ public class Conversa implements Serializable {
     @OneToMany(mappedBy = "id")
     private List<Jogador> jogadores = new ArrayList<>();
 
+
     public List<Jogador> getJogadores(){ return this.jogadores; }
 
     public void addJogador(Jogador jogador){
         this.jogadores.add(jogador);
+    }
+
+    @OneToMany(mappedBy = "mensagem", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Mensagem> mensagens = new ArrayList<>();
+
+    public List<Mensagem> getMensagens() {
+        return mensagens;
+    }
+
+    public void addMensagem(Mensagem mensagem) {
+        this.mensagens.add(mensagem);
     }
 
     //getter and setters

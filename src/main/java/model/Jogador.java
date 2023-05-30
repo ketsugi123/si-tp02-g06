@@ -13,6 +13,8 @@ public class Jogador implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public Jogador(){ }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
@@ -27,13 +29,20 @@ public class Jogador implements Serializable {
 
 
     @OneToMany(mappedBy = "jogador")
-    List<Conversa> conversas = new ArrayList<>();
-
+    private List<Conversa> conversas = new ArrayList<>();
     public List<Conversa> getConversas() { return conversas; }
     public void addConversa(Conversa conversa){ this.conversas.add(conversa); }
 
+    @OneToMany(mappedBy = "crachá" ,cascade = CascadeType.PERSIST)
+    private List<Cracha> crachas = new ArrayList<>();
 
-    public Jogador(){ }
+    public List<Cracha> getCrachas() {
+        return crachas;
+    }
+
+    public void addCracha(Cracha cracha){
+        this.crachas.add(cracha);
+    }
 
     //getter and setters
     public int getId(){

@@ -18,12 +18,14 @@ public class Compra implements Serializable {
     private Double preco;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("id")
+    @JoinColumn(name = "id")
     private Jogo jogo;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @MapsId("id")
+    @JoinColumn(name = "id")
     private Jogador jogador;
 
     //getter and setters
