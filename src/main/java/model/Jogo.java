@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,7 +21,7 @@ public class Jogo implements Serializable {
     private String url;
 
     @OneToMany(mappedBy = "jogo")
-    List<Compra> compras;
+    private List<Compra> compras = new ArrayList<>();
 
     public void addCompra(Compra compra){ this.compras.add(compra); }
 

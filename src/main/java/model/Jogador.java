@@ -16,21 +16,26 @@ public class Jogador implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
-    @OneToMany(mappedBy = "jogador")
-    List<Compra> compras = new ArrayList<>();
-
-    public void addCompra(Compra compra){ this.compras.add(compra); }
-
-    public List<Compra> getCompras() { return compras; }
-
     private String email;
     private String username;
     private String estado;
     private String regiao;
+    @OneToMany(mappedBy = "jogador")
+    private List<Compra> compras = new ArrayList<>();
+    public void addCompra(Compra compra){ this.compras.add(compra); }
+    public List<Compra> getCompras() { return compras; }
+
+
+    @OneToMany(mappedBy = "jogador")
+    List<Conversa> conversas = new ArrayList<>();
+
+    public List<Conversa> getConversas() { return conversas; }
+    public void addConversa(Conversa conversa){ this.conversas.add(conversa); }
 
 
     public Jogador(){ }
+
+    //getter and setters
     public int getId(){
         return this.id;
     }
@@ -66,15 +71,5 @@ public class Jogador implements Serializable {
     public void setRegiao(String regiao){
         this.regiao = regiao;
     }
-
-    @ManyToMany(cascade = {
-            CascadeType.PERSIST,
-            CascadeType.MERGE
-    })
-    @JoinTable(name = "compra",
-            joinColumns = @JoinColumn(name = "jogador"),
-            inverseJoinColumns = @JoinColumn(name = "jogo")
-    )
-    private List<Jogo> jogos;
 
 }
