@@ -10,11 +10,11 @@ public class Participa {
     ParticipaId id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("jogador")
+    @MapsId("id")
     private Jogador jogador;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("conversa")
+    @MapsId("id")
     private Conversa conversa;
 
 

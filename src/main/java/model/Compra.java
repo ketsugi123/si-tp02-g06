@@ -19,11 +19,11 @@ public class Compra implements Serializable {
 
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("jogo")
+    @MapsId("id")
     private Jogo jogo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @MapsId("jogador")
+    @MapsId("id")
     private Jogador jogador;
 
     //getter and setters

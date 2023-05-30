@@ -17,7 +17,7 @@ public class Conversa implements Serializable {
     private int id;
     private String nome;
 
-    @OneToMany(mappedBy = "conversa")
+    @OneToMany(mappedBy = "id")
     private List<Jogador> jogadores = new ArrayList<>();
 
     public List<Jogador> getJogadores(){ return this.jogadores; }
