@@ -15,7 +15,7 @@ public class Participa implements Serializable {
 
     public Participa(){ }
     @EmbeddedId
-    ParticipaId id;
+    private ParticipaId id;
 
     @ManyToOne
     @MapsId("id")

@@ -1,8 +1,10 @@
 package model;
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import model.embeddables.PartidaNMId;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,15 +18,15 @@ public class Partida_Normal implements Serializable {
 
     public Partida_Normal() { }
 
-    @Id
-    private int partida;
+    @EmbeddedId
+    private PartidaNMId partida;
 
     private int pontuacao;
-    public int getPartida() {
+    public PartidaNMId getPartida() {
         return partida;
     }
 
-    public void setPartida(int partida) {
+    public void setPartida(PartidaNMId partida) {
         this.partida = partida;
     }
 

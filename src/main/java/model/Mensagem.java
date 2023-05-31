@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.embeddables.MensagemId;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,13 +15,20 @@ public class Mensagem implements Serializable {
     private static final long serialVersionUID = 1L;
     public Mensagem() { }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    @EmbeddedId
+    private MensagemId mensagemId;
 
     String conteudo;
 
     Date data;
+
+    public MensagemId getMensagemId() {
+        return mensagemId;
+    }
+
+    public void setMensagemId(MensagemId mensagemId) {
+        this.mensagemId = mensagemId;
+    }
 
     public Date getData() {
         return data;
@@ -36,13 +44,5 @@ public class Mensagem implements Serializable {
 
     public void setConteudo(String conteudo) {
         this.conteudo = conteudo;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
     }
 }

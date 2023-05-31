@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.embeddables.PartidaId;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,9 +16,8 @@ public class Partida implements Serializable {
 
     public Partida() { }
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    @EmbeddedId
+    private PartidaId id;
 
     String estado;
     String nome_regiao;
@@ -26,8 +26,12 @@ public class Partida implements Serializable {
 
     Date dtfim;
 
-    public int getId() {
+    public PartidaId getId() {
         return id;
+    }
+
+    public void setId(PartidaId id) {
+        this.id = id;
     }
 
     public String getEstado() {
