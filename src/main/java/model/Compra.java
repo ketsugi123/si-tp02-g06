@@ -22,6 +22,7 @@ public class Compra implements Serializable {
     private Double preco;
 
 
+    // N:N relation Compra between jogo and jogador
     @ManyToOne
     @MapsId("id")
     @JoinColumn(name = "id")

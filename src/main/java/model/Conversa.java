@@ -21,6 +21,7 @@ public class Conversa implements Serializable {
     private int id;
     private String nome;
 
+    // N:N relation participa
     @OneToMany(mappedBy = "id")
     private List<Jogador> jogadores = new ArrayList<>();
 
@@ -31,6 +32,7 @@ public class Conversa implements Serializable {
         this.jogadores.add(jogador);
     }
 
+    // 1:N relation contem
     @OneToMany(mappedBy = "mensagem", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Mensagem> mensagens = new ArrayList<>();
 

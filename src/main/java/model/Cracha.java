@@ -1,9 +1,11 @@
 package model;
 
 
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import model.embeddables.CrachaId;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,18 +17,18 @@ public class Cracha implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
-    @Id
-    String nome;
+    @EmbeddedId
+    private CrachaId id;
     int limit;
 
     String url;
 
-    public String getNome() {
-        return nome;
+    public CrachaId getId() {
+        return this.id;
     }
 
-    public void setNome(String nome) {
-        this.nome = nome;
+    public void setId(CrachaId id) {
+        this.id = id;
     }
 
     public int getLimit() {
