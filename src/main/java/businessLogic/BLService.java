@@ -29,4 +29,25 @@ public class BLService
     //@SuppressWarnings("unchecked")
 	public void test1() throws Exception
     { }
+
+    // These 2 functions constitute the exercise 2d, these do not require a transaction level above
+    // read uncommitted since they only preform an update to the respective tables once
+    public String createPlayer(String username, String email, String regiao) {
+        String query = "SELECT createPlayer(:username, :email, :regiao)";
+        Query functionQuery = em.createQuery(query);
+        functionQuery.setParameter("username", username);
+        functionQuery.setParameter("email", email);
+        functionQuery.setParameter("regiao", regiao);
+        return (String) functionQuery.getSingleResult();
+    }
+
+    public String setPlayerState(int idJogador, String newState) {
+        String query = "SELECT setPlayerState(:idJogador, :newState)";
+        Query functionQuery = em.createQuery(query);
+        functionQuery.setParameter("idJogador", idJogador);
+        functionQuery.setParameter("newState", newState);
+        return (String) functionQuery.getSingleResult();
+    }
+
+    // Exercise 2e
 }
