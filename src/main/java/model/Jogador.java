@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.relations.Compra;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -33,7 +34,7 @@ public class Jogador implements Serializable {
     public List<Conversa> getConversas() { return conversas; }
     public void addConversa(Conversa conversa){ this.conversas.add(conversa); }
 
-    @OneToMany(mappedBy = "crachá" ,cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "crachá")
     private List<Cracha> crachas = new ArrayList<>();
 
     public List<Cracha> getCrachas() {

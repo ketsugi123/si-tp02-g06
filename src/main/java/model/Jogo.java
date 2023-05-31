@@ -1,6 +1,7 @@
 package model;
 
 import jakarta.persistence.*;
+import model.relations.Compra;
 
 import java.io.Serial;
 import java.io.Serializable;

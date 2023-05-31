@@ -1,14 +1,13 @@
 package model;
 
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import model.embeddables.CrachaId;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 @Table(name="crachá")
 @Entity
@@ -22,6 +21,17 @@ public class Cracha implements Serializable {
     int limit;
 
     String url;
+
+    @OneToMany(mappedBy = "cracha")
+    private List<Jogador> jogadores = new ArrayList<>();
+
+    public List<Jogador> getJogadores() {
+        return jogadores;
+    }
+
+    public void addJogadpr(Jogador jogador) {
+        this.jogadores.add(jogador);
+    }
 
     public CrachaId getId() {
         return this.id;
