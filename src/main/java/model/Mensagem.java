@@ -2,12 +2,17 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
 @Table(name = "mensagem")
 public class Mensagem implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    public Mensagem() { }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

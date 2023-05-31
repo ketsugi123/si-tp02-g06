@@ -5,15 +5,18 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import java.io.Serial;
 import java.io.Serializable;
 
 @Table(name="crachá")
 @Entity
 public class Cracha implements Serializable {
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
     @Id
     String nome;
-
     int limit;
 
     String url;

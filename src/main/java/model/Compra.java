@@ -3,12 +3,16 @@ package model;
 import jakarta.persistence.*;
 import model.embeddables.CompraId;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.sql.Date;
 
 @Entity
 @Table(name="compra")
 public class Compra implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public Compra() { }
 

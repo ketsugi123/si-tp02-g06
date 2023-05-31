@@ -3,9 +3,17 @@ package model;
 import jakarta.persistence.*;
 import model.embeddables.ParticipaId;
 
+import java.io.Serial;
+import java.io.Serializable;
+
 @Entity
 @Table(name = "jogador_conversa")
-public class Participa {
+public class Participa implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Participa(){ }
     @EmbeddedId
     ParticipaId id;
 
