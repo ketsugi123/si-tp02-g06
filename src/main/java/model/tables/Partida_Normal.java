@@ -1,4 +1,4 @@
-package model;
+package model.tables;
 
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;

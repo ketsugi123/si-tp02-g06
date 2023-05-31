@@ -1,8 +1,8 @@
 package model.relations;
 
 import jakarta.persistence.*;
-import model.Cracha;
-import model.Jogador;
+import model.tables.Cracha;
+import model.tables.Jogador;
 import model.embeddables.GanhouId;
 
 import java.io.Serializable;

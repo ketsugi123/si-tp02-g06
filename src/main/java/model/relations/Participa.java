@@ -1,8 +1,8 @@
 package model.relations;
 
 import jakarta.persistence.*;
-import model.Conversa;
-import model.Jogador;
+import model.tables.Conversa;
+import model.tables.Jogador;
 import model.embeddables.ParticipaId;
 
 import java.io.Serial;

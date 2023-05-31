@@ -1,8 +1,8 @@
 package model.relations;
 
 import jakarta.persistence.*;
-import model.Jogador;
-import model.Jogo;
+import model.tables.Jogador;
+import model.tables.Jogo;
 import model.embeddables.CompraId;
 
 import java.io.Serial;
