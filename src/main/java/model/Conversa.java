@@ -2,6 +2,7 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,6 +10,9 @@ import java.util.List;
 @Entity
 @Table(name="conversa")
 public class Conversa implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     public Conversa() { }
 

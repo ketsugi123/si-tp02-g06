@@ -2,12 +2,18 @@ package model;
 
 import jakarta.persistence.*;
 
+import java.io.Serial;
 import java.io.Serializable;
 import java.util.Date;
 
 @Entity
 @Table(name="partida")
 public class Partida implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Partida() { }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

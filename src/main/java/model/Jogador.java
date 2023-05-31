@@ -44,6 +44,29 @@ public class Jogador implements Serializable {
         this.crachas.add(cracha);
     }
 
+    @OneToMany(mappedBy = "partida_normal", cascade = CascadeType.PERSIST)
+    private List<Partida_Normal> partidasNormais = new ArrayList<>();
+
+    public List<Partida_Normal> getPartidasNormais() {
+        return partidasNormais;
+    }
+
+    public void addPartida_Normal(Partida_Normal partida_normal){
+        this.partidasNormais.add(partida_normal);
+    }
+
+    @OneToMany(mappedBy = "partida_multijogador", cascade = CascadeType.PERSIST)
+    private List<Partida_MultiJogador> partidasMultiJogador = new ArrayList<>();
+
+    public List<Partida_MultiJogador> getPartidasMultiJogador() {
+        return partidasMultiJogador;
+    }
+
+    public void setCompras(List<Compra> compras) {
+        this.compras = compras;
+    }
+
+
     //getter and setters
     public int getId(){
         return this.id;
