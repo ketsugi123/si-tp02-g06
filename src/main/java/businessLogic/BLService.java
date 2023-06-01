@@ -49,4 +49,27 @@ public class BLService
     }
 
     // Exercise 2e
+    public Table totalPontosJogador(int idJogador) {
+        String query = "SELECT totalPontosJogador(:idJogador)";
+        Query functionQuery = em.createQuery(query);
+        functionQuery.setParameter("idJogador", idJogador);
+        return (Table) functionQuery.getSingleResult();
+    }
+
+    // Exercise 2f
+    public Table totalJogosJogador(int idJogador) {
+        String query = "SELECT totalJogosJogador(:idJogador)";
+        Query functionQuery = em.createQuery(query);
+        functionQuery.setParameter("idJogador", idJogador);
+        return (Table) functionQuery.getSingleResult();
+    }
+
+    // Exercise 2g
+    public Table PontosJogosPorJogador(String idJogo) {
+        String query = "SELECT PontosJogosPorJogador(:idJogo)";
+        Query functionQuery = em.createQuery(query);
+        functionQuery.setParameter("idJogo", idJogo);
+        return (Table) functionQuery.getSingleResult();
+    }
+
 }
