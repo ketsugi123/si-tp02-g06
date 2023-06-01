@@ -3,35 +3,38 @@ package model.relations;
 import jakarta.persistence.*;
 import model.tables.Cracha;
 import model.tables.Jogador;
-import model.embeddables.GanhouId;
+import model.embeddables.CrachasAdquiridosId;
 
 import java.io.Serializable;
 
 @Entity
 @Table(name="crachá_jogador")
-public class Ganhou implements Serializable {
+public class CrachasAdquiridos implements Serializable {
 
     @EmbeddedId
-    private GanhouId id;
+    private CrachasAdquiridosId id;
 
 
-    // N:N realtion ganhou
+    // N:N realtion CrachasAdquiridos
     @ManyToOne
     @MapsId("jogador")
-    @JoinColumn(name="jogador")
+    @JoinColumn(name="jogador",  referencedColumnName = "jogador")
     private Jogador jogador;
 
+
     @ManyToOne
-    @MapsId("cracha")
-    @JoinColumn(name="crachá")
+    @JoinColumns({
+            @JoinColumn(name = "nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+    })
     private Cracha cracha;
 
 
-    public GanhouId getId() {
+    public CrachasAdquiridosId getId() {
         return id;
     }
 
-    public void setId(GanhouId id) {
+    public void setId(CrachasAdquiridosId id) {
         this.id = id;
     }
 

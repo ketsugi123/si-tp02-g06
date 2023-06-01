@@ -2,6 +2,8 @@ package model.tables;
 
 import jakarta.persistence.*;
 import model.relations.Compra;
+import model.relations.CrachasAdquiridos;
+import model.relations.Participa;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,11 +30,21 @@ public class Jogador implements Serializable {
     public void addCompra(Compra compra){ this.compras.add(compra); }
     public List<Compra> getCompras() { return compras; }
 
+    @OneToMany(mappedBy = "jogador")
+    private List<CrachasAdquiridos> crachasAdquiridosList;
+
+    public List<CrachasAdquiridos> getGanhouList() {
+        return crachasAdquiridosList;
+    }
+
+    public void addGanhou(CrachasAdquiridos crachasAdquiridos) {
+        this.crachasAdquiridosList.add(crachasAdquiridos);
+    }
 
     @OneToMany(mappedBy = "jogador")
-    private List<Conversa> conversas = new ArrayList<>();
-    public List<Conversa> getConversas() { return conversas; }
-    public void addConversa(Conversa conversa){ this.conversas.add(conversa); }
+    private List<Participa> participaList;
+    public List<Participa> getParticipaList() { return this.participaList; }
+    public void addParticipacao(Participa participa){this.participaList.add(participa);}
 
     @OneToMany(mappedBy = "crachá")
     private List<Cracha> crachas = new ArrayList<>();

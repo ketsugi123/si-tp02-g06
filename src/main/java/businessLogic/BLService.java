@@ -31,36 +31,36 @@ public class BLService
     // These 2 functions constitute the exercise 2d, these do not require a transaction level above
     // read uncommitted since they only preform an update to the respective tables once
     public String createPlayer(String username, String email, String regiao) {
-
-        String query = "CALL FUNCTION('createPlayer', :username, :email, :regiao)";
+        String query = "SELECT createPlayer(?1, ?2, ?3)";
         Query functionQuery = em.createNativeQuery(query)
-                .setParameter("username", username)
-                .setParameter("email", email)
-                .setParameter("regiao", regiao);
+                .setParameter(1, username)
+                .setParameter(2, email)
+                .setParameter(3, regiao);
         return (String) functionQuery.getSingleResult();
+
     }
 
     public String setPlayerState(int idJogador, String newState) {
-        String query = "CALL FUNCTION('setPlayerState',:idJogador, :newState)";
+        String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
-                .setParameter("idJogador", idJogador)
-                .setParameter("newState", newState);
+                .setParameter(1, idJogador)
+                .setParameter(2, newState);
         return (String) functionQuery.getSingleResult();
     }
 
     // Exercise 2e
     public Table totalPontosJogador(int idJogador) {
-        String query = "SELECT totalPontosJogador(:idJogador)";
+        String query = "SELECT totalPontosJogador(?1)";
         Query functionQuery = em.createQuery(query);
-        functionQuery.setParameter("idJogador", idJogador);
+        functionQuery.setParameter(1, idJogador);
         return (Table) functionQuery.getSingleResult();
     }
 
     // Exercise 2f
     public Table totalJogosJogador(int idJogador) {
-        String query = "SELECT totalJogosJogador(:idJogador)";
+        String query = "SELECT totalJogosJogador(?1)";
         Query functionQuery = em.createQuery(query);
-        functionQuery.setParameter("idJogador", idJogador);
+        functionQuery.setParameter(1, idJogador);
         return (Table) functionQuery.getSingleResult();
     }
 

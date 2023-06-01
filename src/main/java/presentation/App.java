@@ -34,9 +34,14 @@ public class App
 	public static void main( String[] args ) throws Exception
    {   BLService srv = new BLService();
    	ITest tests[] = new ITest[] {
-         	() -> {try { srv.test1(); } catch(Exception e) {System.out.println(e);}},
-			() -> {try { srv.createPlayer("player1", "player1@email.com", "EU"); } catch(Exception e) {System.out.println(e);}}
-//         , () -> {try { srv.teste3(); } catch(Exception e) {}} 
+			() -> {
+				try {
+					srv.createPlayer("player1", "player1@email.com", "EU");
+				} catch(Exception e) {
+					System.out.println(e);
+				}},
+			() -> {
+				try { srv.setPlayerState(1, "Banido"); } catch(Exception e) {}}
 //         , () -> {try { srv.teste4(); } catch(Exception e) {}} 
 //         , () -> {try { srv.teste5(); } catch(Exception e) {}} 
       };

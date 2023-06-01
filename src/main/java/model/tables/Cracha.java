@@ -3,6 +3,7 @@ package model.tables;
 
 import jakarta.persistence.*;
 import model.embeddables.CrachaId;
+import model.relations.CrachasAdquiridos;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -18,9 +19,21 @@ public class Cracha implements Serializable {
 
     @EmbeddedId
     private CrachaId id;
+
     int limit;
 
     String url;
+
+    @OneToMany(mappedBy = "crachá")
+    private List<CrachasAdquiridos> crachasAdquiridosList;
+
+    public List<CrachasAdquiridos> getGanhouList() {
+        return crachasAdquiridosList;
+    }
+
+    public void addGanhou(CrachasAdquiridos crachasAdquiridos) {
+        this.crachasAdquiridosList.add(crachasAdquiridos);
+    }
 
     @OneToMany(mappedBy = "cracha", cascade = CascadeType.PERSIST)
     private List<Jogador> jogadores = new ArrayList<>();
