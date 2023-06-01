@@ -3,7 +3,6 @@ package model.tables;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import model.embeddables.PartidaId;
 import model.embeddables.PartidaNMId;
 
 import java.io.Serial;

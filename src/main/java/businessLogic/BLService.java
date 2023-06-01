@@ -16,15 +16,13 @@ package businessLogic;
 import java.util.List;
 import jakarta.persistence.*;
 
-import model.*;
-
 /**
  * Hello world!
  *
  */
 public class BLService 
 {
-    EntityManagerFactory emf = Persistence.createEntityManagerFactory("si-tp02-g06");
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("JPAex");
     EntityManager em = emf.createEntityManager();
     //@SuppressWarnings("unchecked")
 	public void test1() throws Exception
@@ -33,19 +31,20 @@ public class BLService
     // These 2 functions constitute the exercise 2d, these do not require a transaction level above
     // read uncommitted since they only preform an update to the respective tables once
     public String createPlayer(String username, String email, String regiao) {
-        String query = "SELECT createPlayer(:username, :email, :regiao)";
-        Query functionQuery = em.createQuery(query);
-        functionQuery.setParameter("username", username);
-        functionQuery.setParameter("email", email);
-        functionQuery.setParameter("regiao", regiao);
+
+        String query = "CALL FUNCTION('createPlayer', :username, :email, :regiao)";
+        Query functionQuery = em.createNativeQuery(query)
+                .setParameter("username", username)
+                .setParameter("email", email)
+                .setParameter("regiao", regiao);
         return (String) functionQuery.getSingleResult();
     }
 
     public String setPlayerState(int idJogador, String newState) {
-        String query = "SELECT setPlayerState(:idJogador, :newState)";
-        Query functionQuery = em.createQuery(query);
-        functionQuery.setParameter("idJogador", idJogador);
-        functionQuery.setParameter("newState", newState);
+        String query = "CALL FUNCTION('setPlayerState',:idJogador, :newState)";
+        Query functionQuery = em.createNativeQuery(query)
+                .setParameter("idJogador", idJogador)
+                .setParameter("newState", newState);
         return (String) functionQuery.getSingleResult();
     }
 

@@ -17,13 +17,13 @@ public class Ganhou implements Serializable {
 
     // N:N realtion ganhou
     @ManyToOne
-    @MapsId("id")
-    @JoinColumn(name="id")
+    @MapsId("jogador")
+    @JoinColumn(name="jogador")
     private Jogador jogador;
 
     @ManyToOne
-    @MapsId("nome")
-    @JoinColumn(name="nome")
+    @MapsId("cracha")
+    @JoinColumn(name="crachá")
     private Cracha cracha;
 
 

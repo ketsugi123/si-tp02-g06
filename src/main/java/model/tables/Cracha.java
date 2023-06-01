@@ -22,7 +22,7 @@ public class Cracha implements Serializable {
 
     String url;
 
-    @OneToMany(mappedBy = "cracha")
+    @OneToMany(mappedBy = "cracha", cascade = CascadeType.PERSIST)
     private List<Jogador> jogadores = new ArrayList<>();
 
     public List<Jogador> getJogadores() {
