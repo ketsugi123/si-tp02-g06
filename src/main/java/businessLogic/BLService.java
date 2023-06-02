@@ -93,42 +93,62 @@ public class BLService
 
     // Exercise 2h
     public void associarCracha(Integer idJogador, String idJogo, String nomeCracha) {
-        String query = "associarCrachá(?1, ?2, ?3)";
+        String query = "associarCrachá";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery.setParameter(1, idJogador);
-        procedureQuery.setParameter(2, idJogo);
-        procedureQuery.setParameter(3, nomeCracha);
+        procedureQuery
+                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+        procedureQuery
+                .registerStoredProcedureParameter("idJogo", String.class, ParameterMode.IN);
+        procedureQuery
+                .registerStoredProcedureParameter("nomeCrachá", String.class, ParameterMode.IN);
+        procedureQuery.setParameter("idJogador", idJogador);
+        procedureQuery.setParameter("idJogo", idJogo);
+        procedureQuery.setParameter("nomeCrachá", nomeCracha);
         procedureQuery.executeUpdate();
     }
 
     // Exercise 2i
     public Integer iniciarConversa(Integer idJogador, String nomeConversa) {
-        String query = "iniciarConversa(?1, ?2, ?3)";
+        String query = "iniciarConversa";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery.setParameter(1, idJogador);
-        procedureQuery.setParameter(2, nomeConversa);
+        procedureQuery
+                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+        procedureQuery
+                .registerStoredProcedureParameter("nomeConversa", String.class, ParameterMode.IN);
         procedureQuery
                 .registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.OUT);
+        procedureQuery.setParameter("idJogador", idJogador);
+        procedureQuery.setParameter("nomeConversa", nomeConversa);
         procedureQuery.executeUpdate();
         return (Integer) procedureQuery.getOutputParameterValue("idConversa");
     }
 
     // Exercise 2j
     public void juntarConversa(Integer idJogador, Integer idConversa) {
-        String query = "juntarConversa(?1, ?2)";
+        String query = "juntarConversa";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery.setParameter(1, idJogador);
-        procedureQuery.setParameter(2, idConversa);
+        procedureQuery
+                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+        procedureQuery
+                .registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.IN);
+        procedureQuery.setParameter("idJogador", idJogador);
+        procedureQuery.setParameter("idConversa", idConversa);
         procedureQuery.executeUpdate();
     }
 
     // Exercise 2k
     public void enviarMensagem(Integer idJogador, Integer idConversa, String content) {
-        String query = "enviarMensagem(?1, ?2)";
+        String query = "enviarMensagem";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery.setParameter(1, idJogador);
-        procedureQuery.setParameter(2, idConversa);
-        procedureQuery.setParameter(3, content);
+        procedureQuery.
+                registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+        procedureQuery.
+                registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.IN);
+        procedureQuery.
+                registerStoredProcedureParameter("content", String.class, ParameterMode.IN);
+        procedureQuery.setParameter("idJogador", idJogador);
+        procedureQuery.setParameter("idConversa", idConversa);
+        procedureQuery.setParameter("content", content);
         procedureQuery.executeUpdate();
     }
 
