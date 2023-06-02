@@ -26,6 +26,19 @@ public class Partida implements Serializable {
 
     Date dtfim;
 
+    @MapsId("jogo")
+    @ManyToOne
+    @JoinColumn(name = "jogo")
+    private Jogo jogo;
+
+    public void setJogo(Jogo jogo) {
+        this.jogo = jogo;
+    }
+
+    public Jogo getJogo() {
+        return jogo;
+    }
+
     public PartidaId getId() {
         return id;
     }

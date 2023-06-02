@@ -24,6 +24,19 @@ public class Cracha implements Serializable {
 
     String url;
 
+    @MapsId("jogo")
+    @ManyToOne
+    @JoinColumn(name="jogo")
+    private Jogo jogo;
+
+    public Jogo getJogo() {
+        return jogo;
+    }
+
+    public void setJogo(Jogo jogo) {
+        this.jogo = jogo;
+    }
+
     @OneToMany(mappedBy = "cracha")
     private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 

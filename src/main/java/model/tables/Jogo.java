@@ -31,7 +31,7 @@ public class Jogo implements Serializable {
 
     // 1:N pertence
     @OneToMany(mappedBy="jogo",cascade=CascadeType.PERSIST, orphanRemoval=true)
-    private List<Cracha> crachas;
+    private List<Cracha> crachas = new ArrayList<>();
 
     public List<Cracha> getCrachas() {
         return crachas;
@@ -40,7 +40,7 @@ public class Jogo implements Serializable {
     public void addCracha(Cracha cracha) {
         this.crachas.add(cracha);
     }
-    @OneToMany(mappedBy = "partida", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "jogo", cascade = CascadeType.PERSIST, orphanRemoval=true)
     private List<Partida> partidas = new ArrayList<>();
 
     public List<Partida> getPartidas() {
