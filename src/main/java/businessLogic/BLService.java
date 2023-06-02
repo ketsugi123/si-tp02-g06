@@ -133,17 +133,17 @@ public class BLService
     }
 
     // Exercise 2l
-    //TODO(View: jogadorTotalInfo)
+    //TODO(Context: View jogadorTotalInfo)
 
     /**
      * 1. (b)
-     * Funcionalidade 2h sem procedimentos ou funções
+     * Functionality 2h without stored procedures or functions
      */
     //TODO
 
     /**
      * 1. (c)
-     * Funcionalidade 2h com reutilização de procedimentos e funções
+     * Functionality 2h with the reuse of procedures and functions
      */
     //TODO
 }
