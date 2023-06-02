@@ -31,9 +31,10 @@ public class Jogador implements Serializable {
     public List<Compra> getCompras() { return compras; }
 
 
+    //N:N ganhou
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "jogadorCracha_nome", referencedColumnName = "nome"),
             @JoinColumn(name = "jogador", referencedColumnName = "jogador")
     })
     private Cracha cracha;
@@ -48,16 +49,14 @@ public class Jogador implements Serializable {
         this.crachasAdquiridosList.add(crachasAdquiridos);
     }
 
-    // 1:N Pertence
+
+    //N:N Participa Relation
     @OneToMany(mappedBy = "jogador")
     private List<Participa> participaList = new ArrayList<>();
     public List<Participa> getParticipaList() { return this.participaList; }
     public void addParticipacao(Participa participa){this.participaList.add(participa);}
 
-
-    //N:N ganhou
-
-    @OneToMany(mappedBy = "partida_normal", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "jogador", cascade = CascadeType.PERSIST)
     private List<Partida_Normal> partidasNormais = new ArrayList<>();
 
     public List<Partida_Normal> getPartidasNormais() {
@@ -68,16 +67,13 @@ public class Jogador implements Serializable {
         this.partidasNormais.add(partida_normal);
     }
 
-    @OneToMany(mappedBy = "partida_multijogador", cascade = CascadeType.PERSIST)
+    @OneToMany(mappedBy = "jogador", cascade = CascadeType.PERSIST)
     private List<Partida_MultiJogador> partidasMultiJogador = new ArrayList<>();
 
     public List<Partida_MultiJogador> getPartidasMultiJogador() {
         return partidasMultiJogador;
     }
 
-    public void setCompras(List<Compra> compras) {
-        this.compras = compras;
-    }
 
 
     //getter and setters

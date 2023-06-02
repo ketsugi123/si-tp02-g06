@@ -1,8 +1,6 @@
 package model.tables;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import model.embeddables.PartidaNMId;
 
 import java.io.Serial;
@@ -17,20 +15,44 @@ public class Partida_MultiJogador implements Serializable {
     public Partida_MultiJogador() { }
 
     @Id
-    private PartidaNMId partida;
+    private PartidaNMId partida_multiId;
 
     int pontuacao;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({
+            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida"),
+            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo")
+    })
+    private Partida partida;
+
+    @MapsId("jogador")
+    @ManyToOne
+    @JoinColumn(name = "partidaM_jogador", referencedColumnName = "jogador")
+    private Jogador jogador;
+
+    public Jogador getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(Jogador jogador) {
+        this.jogador = jogador;
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
 
     public void setPontuacao(int pontuacao) {
         this.pontuacao = pontuacao;
     }
 
-    public void setPartida(PartidaNMId partida) {
-        this.partida = partida;
+    public void setPartida_multiId(PartidaNMId partida) {
+        this.partida_multiId = partida;
     }
 
-    public PartidaNMId getPartida() {
-        return partida;
+    public PartidaNMId getPartida_multiId() {
+        return partida_multiId;
     }
 
     public int getPontuacao() {

@@ -1,8 +1,6 @@
 package model.tables;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import model.embeddables.PartidaNMId;
 
 import java.io.Serial;
@@ -18,15 +16,40 @@ public class Partida_Normal implements Serializable {
     public Partida_Normal() { }
 
     @EmbeddedId
-    private PartidaNMId partida;
+    private PartidaNMId partida_normalId;
 
     private int pontuacao;
-    public PartidaNMId getPartida() {
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumns({
+            @JoinColumn(name = "partidaN_partida", referencedColumnName = "partida"),
+            @JoinColumn(name = "partidaN_jogo", referencedColumnName = "jogo")
+    })
+    private Partida partida;
+
+    public Partida getPartida() {
         return partida;
     }
 
-    public void setPartida(PartidaNMId partida) {
-        this.partida = partida;
+    @MapsId("jogador")
+    @ManyToOne
+    @JoinColumn(name = "partidaN_jogador", referencedColumnName = "jogador")
+    private Jogador jogador;
+
+    public Jogador getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(Jogador jogador) {
+        this.jogador = jogador;
+    }
+
+    public PartidaNMId getPartida_normalId() {
+        return partida_normalId;
+    }
+
+    public void setPartida_normalId(PartidaNMId partida) {
+        this.partida_normalId = partida;
     }
 
     public int getPontuacao() {
