@@ -50,25 +50,25 @@ public class BLService
 
     // Exercise 2e
     public Table totalPontosJogador(int idJogador) {
-        String query = "SELECT totalPontosJogador(?1)";
-        Query functionQuery = em.createQuery(query);
+        String query = "SELECT * from totalPontosJogador(?1)";
+        Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
         return (Table) functionQuery.getSingleResult();
     }
 
     // Exercise 2f
     public Table totalJogosJogador(int idJogador) {
-        String query = "SELECT totalJogosJogador(?1)";
-        Query functionQuery = em.createQuery(query);
+        String query = "SELECT * from totalJogosJogador(?1)";
+        Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
         return (Table) functionQuery.getSingleResult();
     }
 
     // Exercise 2g
     public Table PontosJogosPorJogador(String idJogo) {
-        String query = "SELECT PontosJogosPorJogador(:idJogo)";
-        Query functionQuery = em.createQuery(query);
-        functionQuery.setParameter("idJogo", idJogo);
+        String query = "SELECT * from PontosJogosPorJogador(?1)";
+        Query functionQuery = em.createNativeQuery(query);
+        functionQuery.setParameter(1, idJogo);
         return (Table) functionQuery.getSingleResult();
     }
 

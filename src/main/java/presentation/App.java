@@ -41,9 +41,14 @@ public class App
 					System.out.println(e);
 				}},
 			() -> {
-				try { srv.setPlayerState(1, "Banido"); } catch(Exception e) {}}
-//         , () -> {try { srv.teste4(); } catch(Exception e) {}} 
-//         , () -> {try { srv.teste5(); } catch(Exception e) {}} 
+				try { srv.setPlayerState(1, "Banido"); }
+				catch(Exception e) {System.out.println(e);}},
+			() -> {
+				try { srv.totalPontosJogador(1); }
+				catch(Exception e) {System.out.println(e);}},
+			() -> {
+				try { srv.totalJogosJogador(1); }
+				catch(Exception e) {System.out.println(e);}}
       };
    	
    	Scanner imp = new Scanner(System.in );
