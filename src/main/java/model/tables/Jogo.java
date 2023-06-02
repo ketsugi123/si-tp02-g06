@@ -28,16 +28,18 @@ public class Jogo implements Serializable {
 
     public List<Compra> getCompras() { return compras; }
 
-    @OneToMany(mappedBy = "crachá" ,cascade = CascadeType.PERSIST)
-    private List<Cracha> crachas = new ArrayList<>();
+
+    // 1:N pertence
+    @OneToMany(mappedBy="jogo",cascade=CascadeType.PERSIST, orphanRemoval=true)
+    private List<Cracha> crachas;
 
     public List<Cracha> getCrachas() {
         return crachas;
     }
-    public void addCracha(Cracha cracha){
+
+    public void addCracha(Cracha cracha) {
         this.crachas.add(cracha);
     }
-
     @OneToMany(mappedBy = "partida", cascade = CascadeType.PERSIST)
     private List<Partida> partidas = new ArrayList<>();
 

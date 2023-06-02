@@ -24,8 +24,8 @@ public class Cracha implements Serializable {
 
     String url;
 
-    @OneToMany(mappedBy = "crachá")
-    private List<CrachasAdquiridos> crachasAdquiridosList;
+    @OneToMany(mappedBy = "cracha")
+    private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 
     public List<CrachasAdquiridos> getGanhouList() {
         return crachasAdquiridosList;

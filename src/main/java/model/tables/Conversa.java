@@ -1,6 +1,7 @@
 package model.tables;
 
 import jakarta.persistence.*;
+import model.relations.Participa;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,16 +24,16 @@ public class Conversa implements Serializable {
 
     // N:N relation participa
     @OneToMany(mappedBy = "conversa")
-    private List<Jogador> jogadores = new ArrayList<>();
+    private List<Participa> participantes = new ArrayList<>();
 
-    public List<Jogador> getJogadores(){ return this.jogadores; }
+    public List<Participa> getParticipantes(){ return this.participantes; }
 
-    public void addJogador(Jogador jogador){
-        this.jogadores.add(jogador);
+    public void addJogador(Participa participante){
+        this.participantes.add(participante);
     }
 
     // 1:N relation contem
-    @OneToMany(mappedBy = "mensagem", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "conversa", cascade = CascadeType.PERSIST, orphanRemoval = true)
     private List<Mensagem> mensagens = new ArrayList<>();
 
     public List<Mensagem> getMensagens() {

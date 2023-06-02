@@ -24,8 +24,8 @@ public class CrachasAdquiridos implements Serializable {
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "nome", referencedColumnName = "nome"),
-            @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+            @JoinColumn(name = "cracha_nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "cracha_jogador", referencedColumnName = "jogador")
     })
     private Cracha cracha;
 

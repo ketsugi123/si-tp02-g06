@@ -30,32 +30,32 @@ public class Jogador implements Serializable {
     public void addCompra(Compra compra){ this.compras.add(compra); }
     public List<Compra> getCompras() { return compras; }
 
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+    })
+    private Cracha cracha;
     @OneToMany(mappedBy = "jogador")
-    private List<CrachasAdquiridos> crachasAdquiridosList;
+    private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 
     public List<CrachasAdquiridos> getGanhouList() {
         return crachasAdquiridosList;
     }
 
-    public void addGanhou(CrachasAdquiridos crachasAdquiridos) {
+    public void adquirirCracha(CrachasAdquiridos crachasAdquiridos) {
         this.crachasAdquiridosList.add(crachasAdquiridos);
     }
 
+    // 1:N Pertence
     @OneToMany(mappedBy = "jogador")
-    private List<Participa> participaList;
+    private List<Participa> participaList = new ArrayList<>();
     public List<Participa> getParticipaList() { return this.participaList; }
     public void addParticipacao(Participa participa){this.participaList.add(participa);}
 
-    @OneToMany(mappedBy = "crachá")
-    private List<Cracha> crachas = new ArrayList<>();
 
-    public List<Cracha> getCrachas() {
-        return crachas;
-    }
-
-    public void addCracha(Cracha cracha){
-        this.crachas.add(cracha);
-    }
+    //N:N ganhou
 
     @OneToMany(mappedBy = "partida_normal", cascade = CascadeType.PERSIST)
     private List<Partida_Normal> partidasNormais = new ArrayList<>();

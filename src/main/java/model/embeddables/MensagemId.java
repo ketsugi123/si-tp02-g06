@@ -11,5 +11,5 @@ import java.io.Serializable;
 public class MensagemId implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
-    int connversa;
+    int conversa;
 }

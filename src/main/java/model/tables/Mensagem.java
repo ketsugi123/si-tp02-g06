@@ -22,6 +22,11 @@ public class Mensagem implements Serializable {
 
     Date data;
 
+    @MapsId("conversa")
+    @ManyToOne
+    @JoinColumn(name="conversa")
+    private Conversa conversa;
+
     public MensagemId getMensagemId() {
         return mensagemId;
     }
