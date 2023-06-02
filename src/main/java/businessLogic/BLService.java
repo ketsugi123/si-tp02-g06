@@ -13,7 +13,12 @@ acarretar problemas vários, em particular, no que respeita à consistência dos da
 
 package businessLogic;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
 import jakarta.persistence.*;
 
 /**
@@ -28,6 +33,10 @@ public class BLService
 	public void test1() throws Exception
     { }
 
+    /**
+     * 1. (a)
+     * Access to the funcionalities 2d to 2l
+     */
     // These 2 functions constitute the exercise 2d, these do not require a transaction level above
     // read uncommitted since they only preform an update to the respective tables once
     public String createPlayer(String username, String email, String regiao) {
@@ -40,7 +49,7 @@ public class BLService
 
     }
 
-    public String setPlayerState(int idJogador, String newState) {
+    public String setPlayerState(Integer idJogador, String newState) {
         String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
                 .setParameter(1, idJogador)
@@ -49,27 +58,92 @@ public class BLService
     }
 
     // Exercise 2e
-    public Table totalPontosJogador(int idJogador) {
-        String query = "SELECT * from totalPontosJogador(?1)";
+    public Integer totalPontosJogador(Integer idJogador) {
+        String query = "SELECT totalPontos from totalPontosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
-        return (Table) functionQuery.getSingleResult();
+        return (Integer) functionQuery.getSingleResult();
     }
 
     // Exercise 2f
-    public Table totalJogosJogador(int idJogador) {
-        String query = "SELECT * from totalJogosJogador(?1)";
+    public Integer totalJogosJogador(Integer idJogador) {
+        String query = "SELECT totalJogos from totalJogosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
-        return (Table) functionQuery.getSingleResult();
+        return (Integer) functionQuery.getSingleResult();
     }
 
-    // Exercise 2g
-    public Table PontosJogosPorJogador(String idJogo) {
-        String query = "SELECT * from PontosJogosPorJogador(?1)";
-        Query functionQuery = em.createNativeQuery(query);
-        functionQuery.setParameter(1, idJogo);
-        return (Table) functionQuery.getSingleResult();
+    // Exercise 2g (Temporary implementation, not optimized)
+    public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String idJogo) {
+        String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
+        Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
+        jogadoresFunctionQuery.setParameter(1, idJogo);
+        String pontuacaoQuery = "SELECT pontuaçãoTotal from PontosJogosPorJogador(?1)";
+        Query pontuacaoFunctionQuery = em.createNativeQuery(pontuacaoQuery);
+        jogadoresFunctionQuery.setParameter(1, idJogo);
+        List<Integer> idList = (List<Integer>) jogadoresFunctionQuery.getResultList();
+        List<BigDecimal> pointsList = (List<BigDecimal>) pontuacaoFunctionQuery.getResultList();
+        ArrayList<Map<Integer, BigDecimal>> resultList = new ArrayList<>();
+        int numberOfPlayers = idList.size();
+        for (int i = 0; i < numberOfPlayers; i++) {
+            resultList.add(Map.of(idList.get(i), pointsList.get(i)));
+        }
+        return resultList;
     }
 
+    // Exercise 2h
+    public void associarCracha(Integer idJogador, String idJogo, String nomeCracha) {
+        String query = "associarCrachá(?1, ?2, ?3)";
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+        procedureQuery.setParameter(1, idJogador);
+        procedureQuery.setParameter(2, idJogo);
+        procedureQuery.setParameter(3, nomeCracha);
+        procedureQuery.executeUpdate();
+    }
+
+    // Exercise 2i
+    public Integer iniciarConversa(Integer idJogador, String nomeConversa) {
+        String query = "iniciarConversa(?1, ?2, ?3)";
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+        procedureQuery.setParameter(1, idJogador);
+        procedureQuery.setParameter(2, nomeConversa);
+        procedureQuery
+                .registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.OUT);
+        procedureQuery.executeUpdate();
+        return (Integer) procedureQuery.getOutputParameterValue("idConversa");
+    }
+
+    // Exercise 2j
+    public void juntarConversa(Integer idJogador, Integer idConversa) {
+        String query = "juntarConversa(?1, ?2)";
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+        procedureQuery.setParameter(1, idJogador);
+        procedureQuery.setParameter(2, idConversa);
+        procedureQuery.executeUpdate();
+    }
+
+    // Exercise 2k
+    public void enviarMensagem(Integer idJogador, Integer idConversa, String content) {
+        String query = "enviarMensagem(?1, ?2)";
+        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+        procedureQuery.setParameter(1, idJogador);
+        procedureQuery.setParameter(2, idConversa);
+        procedureQuery.setParameter(3, content);
+        procedureQuery.executeUpdate();
+    }
+
+    // Exercise 2l
+    //TODO(View: jogadorTotalInfo)
+
+    /**
+     * 1. (b)
+     * Funcionalidade 2h sem procedimentos ou funções
+     */
+    //TODO
+
+    /**
+     * 1. (c)
+     * Funcionalidade 2h com reutilização de procedimentos e funções
+     */
+    //TODO
 }
