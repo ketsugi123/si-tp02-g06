@@ -36,18 +36,20 @@ public class App
    	ITest tests[] = new ITest[] {
 			() -> {
 				try {
-					srv.createPlayer("player1", "player1@email.com", "EU");
+					System.out.println(
+						srv.createPlayer("player1", "player1@email.com", "EU")
+					);
 				} catch(Exception e) {
 					System.out.println(e);
 				}},
 			() -> {
-				try { srv.setPlayerState(1, "Banido"); }
+				try { System.out.println(srv.setPlayerState(1, "Banido")); }
 				catch(Exception e) {System.out.println(e);}},
 			() -> {
-				try { srv.totalPontosJogador(1); }
+				try { System.out.println(srv.totalPontosJogador(1)); }
 				catch(Exception e) {System.out.println(e);}},
 			() -> {
-				try { srv.totalJogosJogador(1); }
+				try { System.out.println(srv.totalJogosJogador(1)); }
 				catch(Exception e) {System.out.println(e);}}
       };
    	
