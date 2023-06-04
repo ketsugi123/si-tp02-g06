@@ -10,6 +10,23 @@ import java.io.Serializable;
 @Embeddable
 public class PartidaId implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int partida;
-    String jogo;
+    private int partida;
+    private String jogo;
+
+    public PartidaId(){}
+    public void setPartidaId(int partida) {
+        this.partida = partida;
+    }
+
+    public int getPartidaId() {
+        return partida;
+    }
+
+    public void setJogoId(String jogo) {
+        this.jogo = jogo;
+    }
+
+    public String getJogoId() {
+        return jogo;
+    }
 }
