@@ -29,28 +29,39 @@ public class App
 	protected interface ITest {
 		void test();
 	}
-	
-   @SuppressWarnings("unchecked")
-	public static void main( String[] args ) throws Exception
+
+	public static void main( String[] args )
    {   BLService srv = new BLService();
-   	ITest tests[] = new ITest[] {
+   	ITest[] tests = new ITest[] {
 			() -> {
 				try {
 					System.out.println(
 						srv.createPlayer("player1", "player1@email.com", "EU")
 					);
-				} catch(Exception e) {
-					System.out.println(e);
-				}},
+				} catch(Exception e) { System.out.println(e); }
+				},
 			() -> {
 				try { System.out.println(srv.setPlayerState(1, "Banido")); }
 				catch(Exception e) {System.out.println(e);}},
 			() -> {
 				try { System.out.println(srv.totalPontosJogador(1)); }
-				catch(Exception e) {System.out.println(e);}},
+				catch(Exception e) {System.out.println(e);}
+				},
 			() -> {
 				try { System.out.println(srv.totalJogosJogador(1)); }
-				catch(Exception e) {System.out.println(e);}}
+				catch(Exception e) {System.out.println(e);}
+			},
+			() -> {
+				try { System.out.println(srv.PontosJogosPorJogador("E0uj5yHlvT")); }
+				catch (Exception e){ System.out.println(e);}
+			},
+			() -> {
+				try {
+					srv.associarCracha(1, "E0uj5yHlvT", "Master");
+				}catch (Exception e){
+					System.out.println(e);
+				}
+			}
       };
    	
    	Scanner imp = new Scanner(System.in );

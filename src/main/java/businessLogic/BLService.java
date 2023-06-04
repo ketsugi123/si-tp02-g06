@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder;
 
 /**
  * Hello world!
@@ -49,7 +50,7 @@ public class BLService
 
     }
 
-    public String setPlayerState(Integer idJogador, String newState) {
+    public String setPlayerState(int idJogador, String newState) {
         String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
                 .setParameter(1, idJogador)
@@ -58,29 +59,30 @@ public class BLService
     }
 
     // Exercise 2e
-    public Integer totalPontosJogador(Integer idJogador) {
+    public Long totalPontosJogador(int idJogador) {
         String query = "SELECT totalPontos from totalPontosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
-        return (Integer) functionQuery.getSingleResult();
+        return (Long) functionQuery.getSingleResult();
     }
 
     // Exercise 2f
-    public Integer totalJogosJogador(Integer idJogador) {
+    public Long totalJogosJogador(int idJogador) {
         String query = "SELECT totalJogos from totalJogosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
-        return (Integer) functionQuery.getSingleResult();
+        return (Long) functionQuery.getSingleResult();
     }
 
     // Exercise 2g (Temporary implementation, not optimized)
     public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String idJogo) {
+        System.out.println(idJogo);
         String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
         Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
         jogadoresFunctionQuery.setParameter(1, idJogo);
         String pontuacaoQuery = "SELECT pontuaçãoTotal from PontosJogosPorJogador(?1)";
         Query pontuacaoFunctionQuery = em.createNativeQuery(pontuacaoQuery);
-        jogadoresFunctionQuery.setParameter(1, idJogo);
+        pontuacaoFunctionQuery.setParameter(1, idJogo);
         List<Integer> idList = (List<Integer>) jogadoresFunctionQuery.getResultList();
         List<BigDecimal> pointsList = (List<BigDecimal>) pontuacaoFunctionQuery.getResultList();
         ArrayList<Map<Integer, BigDecimal>> resultList = new ArrayList<>();
@@ -92,11 +94,11 @@ public class BLService
     }
 
     // Exercise 2h
-    public void associarCracha(Integer idJogador, String idJogo, String nomeCracha) {
+    public void associarCracha(int idJogador, String idJogo, String nomeCracha) {
         String query = "associarCrachá";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
         procedureQuery
-                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
         procedureQuery
                 .registerStoredProcedureParameter("idJogo", String.class, ParameterMode.IN);
         procedureQuery
@@ -108,42 +110,42 @@ public class BLService
     }
 
     // Exercise 2i
-    public Integer iniciarConversa(Integer idJogador, String nomeConversa) {
+    public Long iniciarConversa(int idJogador, String nomeConversa) {
         String query = "iniciarConversa";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
         procedureQuery
-                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
         procedureQuery
                 .registerStoredProcedureParameter("nomeConversa", String.class, ParameterMode.IN);
         procedureQuery
-                .registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.OUT);
+                .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.OUT);
         procedureQuery.setParameter("idJogador", idJogador);
         procedureQuery.setParameter("nomeConversa", nomeConversa);
         procedureQuery.executeUpdate();
-        return (Integer) procedureQuery.getOutputParameterValue("idConversa");
+        return (Long) procedureQuery.getOutputParameterValue("idConversa");
     }
 
     // Exercise 2j
-    public void juntarConversa(Integer idJogador, Integer idConversa) {
+    public void juntarConversa(int idJogador, int idConversa) {
         String query = "juntarConversa";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
         procedureQuery
-                .registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
         procedureQuery
-                .registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.IN);
+                .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
         procedureQuery.setParameter("idJogador", idJogador);
         procedureQuery.setParameter("idConversa", idConversa);
         procedureQuery.executeUpdate();
     }
 
     // Exercise 2k
-    public void enviarMensagem(Integer idJogador, Integer idConversa, String content) {
+    public void enviarMensagem(int idJogador, int idConversa, String content) {
         String query = "enviarMensagem";
         StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
         procedureQuery.
-                registerStoredProcedureParameter("idJogador", Integer.class, ParameterMode.IN);
+                registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
         procedureQuery.
-                registerStoredProcedureParameter("idConversa", Integer.class, ParameterMode.IN);
+                registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
         procedureQuery.
                 registerStoredProcedureParameter("content", String.class, ParameterMode.IN);
         procedureQuery.setParameter("idJogador", idJogador);
