@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class MensagemId implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private int conversaId;
+    private int conversa;
 
     public MensagemId(){ }
     public void setid(int id) {
@@ -22,11 +22,11 @@ public class MensagemId implements Serializable {
         return id;
     }
 
-    public int getConversaId() {
-        return conversaId;
+    public int getConversa() {
+        return conversa;
     }
-    public void setConversaId(int conversa) {
-        this.conversaId = conversa;
+    public void setConversa(int conversa) {
+        this.conversa = conversa;
     }
 
 }

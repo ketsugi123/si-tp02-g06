@@ -7,33 +7,33 @@ import java.io.Serializable;
 // Composite Primary key for Partida_Normal and Partida_MultiJogador
 @Embeddable
 public class PartidaNMId implements Serializable {
-    int partidaId;
-    String jogoId;
-    int jogadorId;
+    int partida;
+    String jogo;
+    int jogador;
 
     public PartidaNMId(){}
 
-    public void setPartidaId(int partidaId) {
-        this.partidaId = partidaId;
+    public void setPartida(int partidaId) {
+        this.partida = partidaId;
     }
 
-    public int getPartidaId() {
-        return partidaId;
+    public int getPartida() {
+        return partida;
     }
 
-    public String getJogoId() {
-        return jogoId;
+    public String getJogo() {
+        return jogo;
     }
 
-    public int getJogadorId() {
-        return jogadorId;
+    public int getJogador() {
+        return jogador;
     }
 
-    public void setJogadorId(int jogadorId) {
-        this.jogadorId = jogadorId;
+    public void setJogador(int jogadorId) {
+        this.jogador = jogadorId;
     }
 
-    public void setJogoId(String jogoId) {
-        this.jogoId = jogoId;
+    public void setJogo(String jogoId) {
+        this.jogo = jogoId;
     }
 }

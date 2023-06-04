@@ -6,32 +6,32 @@ import java.io.Serializable;
 
 @Embeddable
 public class CrachasAdquiridosId implements Serializable {
-    private int jogoId;
-    private String jogadorId;
-    private String crachaId;
+    private int jogo;
+    private String jogador;
+    private String cracha;
 
     public CrachasAdquiridosId(){}
-    public void setJogoId(int jogo) {
-        this.jogoId = jogo;
+    public void setJogo(int jogo) {
+        this.jogo = jogo;
     }
 
-    public int getJogoId() {
-        return jogoId;
+    public int getJogo() {
+        return jogo;
     }
 
-    public void setJogadorId(String jogador) {
-        this.jogadorId = jogador;
+    public void setJogador(String jogador) {
+        this.jogador = jogador;
     }
 
-    public String getJogadorId() {
-        return jogadorId;
+    public String getJogador() {
+        return jogador;
     }
 
-    public void setCrachaId(String cracha) {
-        this.crachaId = cracha;
+    public void setCracha(String cracha) {
+        this.cracha = cracha;
     }
 
-    public String getCrachaId() {
-        return crachaId;
+    public String getCracha() {
+        return cracha;
     }
 }
