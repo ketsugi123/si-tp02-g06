@@ -31,8 +31,6 @@ public class BLService
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("JPAex");
     EntityManager em = emf.createEntityManager();
     //@SuppressWarnings("unchecked")
-	public void test1() throws Exception
-    { }
 
     /**
      * 1. (a)
@@ -76,7 +74,6 @@ public class BLService
 
     // Exercise 2g (Temporary implementation, not optimized)
     public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String idJogo) {
-        System.out.println(idJogo);
         String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
         Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
         jogadoresFunctionQuery.setParameter(1, idJogo);
@@ -95,63 +92,94 @@ public class BLService
 
     // Exercise 2h
     public void associarCracha(int idJogador, String idJogo, String nomeCracha) {
-        String query = "associarCrachá";
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery
-                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-        procedureQuery
-                .registerStoredProcedureParameter("idJogo", String.class, ParameterMode.IN);
-        procedureQuery
-                .registerStoredProcedureParameter("nomeCrachá", String.class, ParameterMode.IN);
-        procedureQuery.setParameter("idJogador", idJogador);
-        procedureQuery.setParameter("idJogo", idJogo);
-        procedureQuery.setParameter("nomeCrachá", nomeCracha);
-        procedureQuery.executeUpdate();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try{
+            String query = "associarCrachá";
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+            procedureQuery
+                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
+            procedureQuery
+                    .registerStoredProcedureParameter("idJogo", String.class, ParameterMode.IN);
+            procedureQuery
+                    .registerStoredProcedureParameter("nomeCrachá", String.class, ParameterMode.IN);
+            procedureQuery.setParameter("idJogador", idJogador);
+            procedureQuery.setParameter("idJogo", idJogo);
+            procedureQuery.setParameter("nomeCrachá", nomeCracha);
+            procedureQuery.executeUpdate();
+            transaction.commit();
+        } catch(Exception e){
+            if(transaction.isActive()) transaction.rollback();
+        }
     }
 
     // Exercise 2i
     public Long iniciarConversa(int idJogador, String nomeConversa) {
-        String query = "iniciarConversa";
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery
-                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-        procedureQuery
-                .registerStoredProcedureParameter("nomeConversa", String.class, ParameterMode.IN);
-        procedureQuery
-                .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.OUT);
-        procedureQuery.setParameter("idJogador", idJogador);
-        procedureQuery.setParameter("nomeConversa", nomeConversa);
-        procedureQuery.executeUpdate();
-        return (Long) procedureQuery.getOutputParameterValue("idConversa");
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try {
+            String query = "iniciarConversa";
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+            procedureQuery
+                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
+            procedureQuery
+                    .registerStoredProcedureParameter("nomeConversa", String.class, ParameterMode.IN);
+            procedureQuery
+                    .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.OUT);
+            procedureQuery.setParameter("idJogador", idJogador);
+            procedureQuery.setParameter("nomeConversa", nomeConversa);
+            procedureQuery.executeUpdate();
+            transaction.commit();
+            return (Long) procedureQuery.getOutputParameterValue("idConversa");
+        } catch (Exception e) {
+            if (transaction.isActive()) transaction.rollback();
+        }
+        return null;
     }
 
     // Exercise 2j
     public void juntarConversa(int idJogador, int idConversa) {
-        String query = "juntarConversa";
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery
-                .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-        procedureQuery
-                .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
-        procedureQuery.setParameter("idJogador", idJogador);
-        procedureQuery.setParameter("idConversa", idConversa);
-        procedureQuery.executeUpdate();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try{
+            String query = "juntarConversa";
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+            procedureQuery
+                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
+            procedureQuery
+                    .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
+            procedureQuery.setParameter("idJogador", idJogador);
+            procedureQuery.setParameter("idConversa", idConversa);
+            procedureQuery.executeUpdate();
+            transaction.commit();
+        } catch(Exception e){
+            if(transaction.isActive()){
+                transaction.rollback();
+            }
+        }
     }
 
     // Exercise 2k
     public void enviarMensagem(int idJogador, int idConversa, String content) {
-        String query = "enviarMensagem";
-        StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-        procedureQuery.
-                registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-        procedureQuery.
-                registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
-        procedureQuery.
-                registerStoredProcedureParameter("content", String.class, ParameterMode.IN);
-        procedureQuery.setParameter("idJogador", idJogador);
-        procedureQuery.setParameter("idConversa", idConversa);
-        procedureQuery.setParameter("content", content);
-        procedureQuery.executeUpdate();
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        try{
+            String query = "enviarMensagem";
+            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
+            procedureQuery.
+                    registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
+            procedureQuery.
+                    registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
+            procedureQuery.
+                    registerStoredProcedureParameter("content", String.class, ParameterMode.IN);
+            procedureQuery.setParameter("idJogador", idJogador);
+            procedureQuery.setParameter("idConversa", idConversa);
+            procedureQuery.setParameter("content", content);
+            procedureQuery.executeUpdate();
+            transaction.commit();
+        } catch (Exception e){
+            if(transaction.isActive()) transaction.rollback();
+        }
     }
 
     // Exercise 2l
