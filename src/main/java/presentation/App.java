@@ -34,12 +34,8 @@ public class App
    {   BLService srv = new BLService();
    	ITest[] tests = new ITest[] {
 			() -> {
-				try {
-					System.out.println(
-						srv.createPlayer("player1", "player1@email.com", "EU")
-					);
-				} catch(Exception e) { System.out.println(e); }
-				},
+				try { System.out.println( srv.createPlayer("player1", "player1@email.com", "EU") ); }
+				catch(Exception e) { System.out.println(e); }},
 			() -> {
 				try { System.out.println(srv.setPlayerState(1, "Banido")); }
 				catch(Exception e) {System.out.println(e);}},
@@ -52,15 +48,24 @@ public class App
 				catch(Exception e) {System.out.println(e);}
 			},
 			() -> {
-				try { System.out.println(srv.PontosJogosPorJogador("E0uj5yHlvT")); }
+				try { System.out.println(srv.PontosJogosPorJogador("U5qi4ZyKRX")); }
 				catch (Exception e){ System.out.println(e);}
 			},
 			() -> {
-				try {
-					srv.associarCracha(1, "E0uj5yHlvT", "Master");
-				}catch (Exception e){
-					System.out.println(e);
-				}
+				try { srv.associarCracha(2, "xqhfGVolbO", "Master");}
+				catch (Exception e){ System.out.println(e); }
+			},
+			() -> {
+				try { srv.iniciarConversa(1, "newConvo");}
+				catch (Exception e){ System.out.println(e); }
+			},
+			() -> {
+				try { srv.juntarConversa(2, 2);}
+				catch (Exception e){ System.out.println(e); }
+			},
+			() -> {
+				try { srv.enviarMensagem(2, 1, "Hello");}
+				catch (Exception e){ System.out.println(e); }
 			}
       };
    	

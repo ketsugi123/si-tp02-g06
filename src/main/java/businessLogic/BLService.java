@@ -14,6 +14,10 @@ acarretar problemas vários, em particular, no que respeita à consistência dos da
 package businessLogic;
 
 import java.math.BigDecimal;
+import java.sql.CallableStatement;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -30,6 +34,12 @@ public class BLService
 {
     EntityManagerFactory emf = Persistence.createEntityManagerFactory("JPAex");
     EntityManager em = emf.createEntityManager();
+
+    private EntityTransaction startTransaction(){
+        EntityTransaction transaction = em.getTransaction();
+        transaction.begin();
+        return  transaction;
+    }
     //@SuppressWarnings("unchecked")
 
     /**
@@ -91,93 +101,74 @@ public class BLService
     }
 
     // Exercise 2h
-    public void associarCracha(int idJogador, String idJogo, String nomeCracha) {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        try{
-            String query = "associarCrachá";
-            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-            procedureQuery
-                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-            procedureQuery
-                    .registerStoredProcedureParameter("idJogo", String.class, ParameterMode.IN);
-            procedureQuery
-                    .registerStoredProcedureParameter("nomeCrachá", String.class, ParameterMode.IN);
-            procedureQuery.setParameter("idJogador", idJogador);
-            procedureQuery.setParameter("idJogo", idJogo);
-            procedureQuery.setParameter("nomeCrachá", nomeCracha);
-            procedureQuery.executeUpdate();
-            transaction.commit();
+    public void associarCracha(int idJogador, String idJogo, String nomeCracha) throws SQLException {
+        EntityTransaction transaction = startTransaction();
+        Connection cn = em.unwrap(Connection.class);
+        try {
+            cn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
+                storedProcedure.setInt(1, idJogador);
+                storedProcedure.setString(2, idJogo);
+                storedProcedure.setString(3, nomeCracha);
+                storedProcedure.executeUpdate();
+                transaction.commit();
+            }
         } catch(Exception e){
             if(transaction.isActive()) transaction.rollback();
         }
     }
 
     // Exercise 2i
-    public Long iniciarConversa(int idJogador, String nomeConversa) {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
+    public Integer iniciarConversa(int idJogador, String nomeConversa) {
+        EntityTransaction transaction = startTransaction();
+        Connection cn = em.unwrap(Connection.class);
+        Integer idConversa = null;
         try {
-            String query = "iniciarConversa";
-            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-            procedureQuery
-                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-            procedureQuery
-                    .registerStoredProcedureParameter("nomeConversa", String.class, ParameterMode.IN);
-            procedureQuery
-                    .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.OUT);
-            procedureQuery.setParameter("idJogador", idJogador);
-            procedureQuery.setParameter("nomeConversa", nomeConversa);
-            procedureQuery.executeUpdate();
-            transaction.commit();
-            return (Long) procedureQuery.getOutputParameterValue("idConversa");
-        } catch (Exception e) {
-            if (transaction.isActive()) transaction.rollback();
+            try (CallableStatement storedProcedure = cn.prepareCall("call iniciarConversa(?,?, ?)")) {
+                cn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+                storedProcedure.setInt(1, idJogador);
+                storedProcedure.setString(2, nomeConversa);
+                storedProcedure.registerOutParameter(3, Types.INTEGER);
+                storedProcedure.executeUpdate();
+                idConversa = storedProcedure.getInt(3);
+                transaction.commit();
+            }
+        } catch(Exception e){
+            if(transaction.isActive()) transaction.rollback();
         }
-        return null;
+        return idConversa;
     }
 
     // Exercise 2j
     public void juntarConversa(int idJogador, int idConversa) {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        try{
-            String query = "juntarConversa";
-            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-            procedureQuery
-                    .registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-            procedureQuery
-                    .registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
-            procedureQuery.setParameter("idJogador", idJogador);
-            procedureQuery.setParameter("idConversa", idConversa);
-            procedureQuery.executeUpdate();
-            transaction.commit();
-        } catch(Exception e){
-            if(transaction.isActive()){
-                transaction.rollback();
+        EntityTransaction transaction = startTransaction();
+        Connection cn = em.unwrap(Connection.class);
+        try {
+            try (CallableStatement storedProcedure = cn.prepareCall("call juntarConversa(?,?)")) {
+                storedProcedure.setInt(1, idJogador);
+                storedProcedure.setInt(2, idConversa);
+                transaction.commit();
             }
+        } catch(Exception e){
+            if(transaction.isActive()) transaction.rollback();
         }
     }
 
     // Exercise 2k
     public void enviarMensagem(int idJogador, int idConversa, String content) {
-        EntityTransaction transaction = em.getTransaction();
-        transaction.begin();
-        try{
-            String query = "enviarMensagem";
-            StoredProcedureQuery procedureQuery = em.createStoredProcedureQuery(query);
-            procedureQuery.
-                    registerStoredProcedureParameter("idJogador", Long.class, ParameterMode.IN);
-            procedureQuery.
-                    registerStoredProcedureParameter("idConversa", Long.class, ParameterMode.IN);
-            procedureQuery.
-                    registerStoredProcedureParameter("content", String.class, ParameterMode.IN);
-            procedureQuery.setParameter("idJogador", idJogador);
-            procedureQuery.setParameter("idConversa", idConversa);
-            procedureQuery.setParameter("content", content);
-            procedureQuery.executeUpdate();
-            transaction.commit();
-        } catch (Exception e){
+
+        EntityTransaction transaction = startTransaction();
+        Connection cn = em.unwrap(Connection.class);
+        try {
+            try (CallableStatement storedProcedure = cn.prepareCall("call enviarMensagem(?,?, ?)")) {
+                cn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+                storedProcedure.setInt(1, idJogador);
+                storedProcedure.setInt(2, idConversa);
+                storedProcedure.setString(3, content);
+                storedProcedure.executeUpdate();
+                transaction.commit();
+            }
+        } catch(Exception e){
             if(transaction.isActive()) transaction.rollback();
         }
     }
