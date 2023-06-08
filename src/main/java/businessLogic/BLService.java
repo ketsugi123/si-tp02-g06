@@ -40,6 +40,12 @@ public class BLService
         transaction.begin();
         return  transaction;
     }
+
+    private void setIsolationLevel(Connection cn, Integer isolationLevel, EntityTransaction transaction) throws SQLException {
+        transaction.rollback();
+        cn.setTransactionIsolation(isolationLevel);
+        transaction.begin();
+    }
     //@SuppressWarnings("unchecked")
 
     /**
@@ -105,7 +111,7 @@ public class BLService
         EntityTransaction transaction = startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
-            cn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
+            setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
                 storedProcedure.setInt(1, idJogador);
                 storedProcedure.setString(2, idJogo);
@@ -124,8 +130,8 @@ public class BLService
         Connection cn = em.unwrap(Connection.class);
         Integer idConversa = null;
         try {
+            setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call iniciarConversa(?,?, ?)")) {
-                cn.setTransactionIsolation(Connection.TRANSACTION_REPEATABLE_READ);
                 storedProcedure.setInt(1, idJogador);
                 storedProcedure.setString(2, nomeConversa);
                 storedProcedure.registerOutParameter(3, Types.INTEGER);
@@ -160,6 +166,7 @@ public class BLService
         EntityTransaction transaction = startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
+            setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call enviarMensagem(?,?, ?)")) {
                 cn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
                 storedProcedure.setInt(1, idJogador);
@@ -173,8 +180,9 @@ public class BLService
         }
     }
 
-    // Exercise 2l
-    //TODO(Context: View jogadorTotalInfo)
+    public Table jogadorTotalInfo(){
+        return null;
+    }
 
     /**
      * 1. (b)
@@ -182,9 +190,4 @@ public class BLService
      */
     //TODO
 
-    /**
-     * 1. (c)
-     * Functionality 2h with the reuse of procedures and functions
-     */
-    //TODO
 }
