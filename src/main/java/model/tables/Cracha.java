@@ -4,8 +4,6 @@ package model.tables;
 import jakarta.persistence.*;
 import model.embeddables.CrachaId;
 import model.relations.CrachasAdquiridos;
-import org.eclipse.persistence.annotations.OptimisticLocking;
-import org.eclipse.persistence.annotations.OptimisticLockingType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -26,7 +24,7 @@ public class Cracha implements Serializable {
     @EmbeddedId
     private CrachaId id;
 
-    int limit;
+    int limite;
 
     String url;
 
@@ -73,12 +71,12 @@ public class Cracha implements Serializable {
         this.id = id;
     }
 
-    public int getLimit() {
-        return limit;
+    public int getLimite() {
+        return limite;
     }
 
-    public void setLimit(int limit) {
-        this.limit = limit;
+    public void setLimite(int limit) {
+        this.limite = limit;
     }
 
     public String getUrl() {
