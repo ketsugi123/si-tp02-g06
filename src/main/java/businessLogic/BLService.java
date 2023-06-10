@@ -244,8 +244,7 @@ public class BLService
         }
     }
 
-    //2 (a)
-    public void aumentarPontosCracha20(String nomeCracha, String idJogo) {
+    private void aumentarPontosCracha20(String nomeCracha, String idJogo, LockModeType lockType) {
         EntityTransaction transaction = startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
@@ -254,6 +253,7 @@ public class BLService
             TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
             selectTypedQuery.setParameter(1, nomeCracha);
             selectTypedQuery.setParameter(2, idJogo);
+            selectTypedQuery.setLockMode(lockType);
             Cracha cracha = selectTypedQuery.getSingleResult();
             setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
@@ -264,7 +264,11 @@ public class BLService
             updateQuery.setParameter("crachaVersion", Cracha.getSerialVersionUID());
             int updatedCount = updateQuery.executeUpdate();
             if (updatedCount == 0) {
-                throw new OptimisticLockException("Concurrent update detected for Cracha");
+                switch (lockType) {
+                    case OPTIMISTIC -> throw new OptimisticLockException("Concurrent update detected for Cracha");
+                    case PESSIMISTIC_READ -> throw new PessimisticLockException("Concurrent update detected for Cracha");
+                    default -> throw new Exception("Concurrent update detected for Cracha");
+                }
             }
             transaction.commit();
         } catch (Exception e) {
@@ -272,4 +276,13 @@ public class BLService
         }
     }
 
+    //2 (a)
+    public void aumentarPontosOptimistic(String nomeCracha, String idJogo) {
+        aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
+    }
+
+    //2 (c)
+    public void aumentarPontosPessimistic(String nomeCracha, String idJogo, LockModeType lockType) {
+        aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
+    }
 }

@@ -14,7 +14,6 @@ import java.util.List;
 
 @Table(name="cracha")
 @Entity
-@OptimisticLocking(type=OptimisticLockingType.CHANGED_COLUMNS)
 public class Cracha implements Serializable {
 
     @Serial
