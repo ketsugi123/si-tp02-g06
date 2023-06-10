@@ -250,9 +250,10 @@ public class BLService
                         getCracha.setParameter(1, nomeCracha);
                         crachaAdquirido.setCracha(getCracha.getSingleResult());
 
-                        getJogador.setParameter(1, idJogador);
-                        Jogador jogador = getJogador.getSingleResult();
+                        Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
+
+
                         em.getTransaction().begin();
                         em.persist(crachaAdquirido);
                         em.getTransaction().commit();
