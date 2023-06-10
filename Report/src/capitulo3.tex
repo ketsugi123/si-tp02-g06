@@ -1,0 +1,71 @@
+%
+% Capítulo 3
+%
+\chapter{Funcionalidade da Aplicação} \label{cap3}
+
+Uma vez o modelo feito é agora possível proceder à implementação das funcionalidades desejadas do trabalho. Estas requerem primeiro acesso às funções e procedimentos
+armazenados criados na primeira parte, os quais vêm em formato das alíneas do primeiro enunciado 2d até 2l.
+
+Com o acesso a estas funcionalidades obtido, procede-se à implementação da alínea 2h como na fase 1 mas sem usar qualquer procedimento armazenado ou função pgSql,
+ou seja, limitando as possibilidades para usar apenas interações entre \texttt{JPA} e PostgreSQL. Após esta implementação é realizada outra vez mas sem a limitação,
+o qual permite facilmente comparar as duas implementações e concluir qual será melhor.
+
+Esta aplicação também permite aumentar em 20\% o número de pontos associados a um crachá, o qual foi implementado com \textit{optimistic locking} e \textit{pessimistic
+locking}. A versão que utiliza \textit{optimistic locking} vem acompanhada de testes que verificam que uma mensagem de erro é levantada quando existe uma alteração
+concorrente que inviabilize a operação.
+
+%
+% Secção 3.1
+%
+\section{Acesso às Funcionalidades da Base de Dados} \label{sec31}
+
+TODO(Descrever a forma como as funções são chamadas no modelo aplicacional)
+
+%
+% Secção 3.2
+%
+\section{Realização da Funcionalidade 2h} \label{sec32}
+
+TODO(Descrever a funcionalidade)
+
+%
+% Secção 3.2.1
+%
+\subsection{Sem usar procedimentos e funções pgSql} \label{sec321}
+
+TODO(Descrever a implementação sem pgSql)
+
+%
+% Secção 3.2.2
+%
+\subsection{Usando procedimentos e funções pgSql} \label{sec322}
+
+TODO(Descrever a implementação com pgSql)
+
+%
+% Secção 3.3
+%
+\section{Funcionalidade Adicional} \label{sec33}
+
+TODO(Aumentar a 20\% cena)
+
+%
+% Secção 3.3.1
+%
+\subsection{Implementação Com \textit{Optimistic Locking}} \label{sec331}
+
+TODO(Descrever a implementação que usa optimistic locking)
+
+%
+% Secção 3.3.2
+%
+\subsection{Implementação Com \textit{Pessimistic Locking}} \label{sec332}
+
+TODO(Descrever a implementação que usa pessimistic locking)
+
+%
+% Secção 3.3.3
+%
+\subsection{Testes da Funcionalidade}\label{sec333}
+
+TODO(Descrever os testes e como se testou concorrência)
