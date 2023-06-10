@@ -1,0 +1,42 @@
+%
+% Capítulo 2
+%
+\chapter{Modelo de dados} \label{cap2}
+
+Antes de passar à implementação das funcionalidades da base de dados é necessário primeiro organizar as tabelas e relações em classes de \textit{Java} correspondentes.
+Este modelo está dividido em três \textit{packages} diferentes, todos dentro do \textit{package} \texttt{model}. Dentro deste econtra-se \texttt{embeddables}, o qual
+contém classes de valores embebidos, ou seja, identificadores complexos que podem englobar mais que um atríbuto. Encontram-se também o \textit{package} \texttt{relations},
+que contém as tabelas que representam relações na base de dados e o \textit{package} \texttt{tables}, o qual contém as tabelas principais.
+
+Cada uma destas classes contém as anotações que sejam necessárias. Realça-se o facto de que as classes dentro do \textit{package} \texttt{relations} têm a anotação
+\texttt{@Entity}. Esta característica deve-se ao facto de todas as tabelas da base de dados, incluindo as que representam relações, serem tratadas como entidades.
+
+%
+% Secção 2.1
+%
+\section{Embeddables} \label{sec21}
+
+As classes dentro deste \textit{package} servem como auxílio á implementação das classes mais complexas, pois estas permitem ter identificadores complexos que sejam
+representados por mais que um atributo. Todas estas classes incluem o uso da anotação \texttt{@Embeddable}.
+
+A implementação destas classes encontra-se no anexo~\ref{a1}.
+
+\section{Relations} \label{sec22}
+
+Este \textit{package} contém as classes que identificam relações do modelo que foram implementadas como tabelas na base de dados. Estas estão colocadas separadamente
+pois não representam uma entidade no modelo ER, mas sim uma relação. Todas contêm as anotações \texttt{@Entity} e \texttt{@Table}, com o valor do campo \texttt{name}
+igual à tabela correspondente da base de dados PostgreSQL.
+
+Como todas estas são representadas através de identificadores de outras entidades, todas têm um campo com a anotação \texttt{@EmbeddedId}, sendo este campo do tipo
+correspondente do \texttt{package} \texttt{embeddables}. A implementação destas classes encontra-se no anexo~\ref{a2}.
+
+\section{Tables} \label{sec23}
+
+Neste \textit{package} encontram-se as tabelas da base de dados que representam entidades no modelo ER. Estas fazem uso das classes presentes em relations para ser mais
+fácil de aceder a certas informações, como, por exemplo, a lista de jogadores que compraram um jogo ou a lista de jogos que um jogador comprou. Estes estão presentes como
+campos das classes \texttt{Jogo} e \texttt{Jogador}, respetivamente.
+
+Existem ainda funções que acompanham estas implementações pois todos estes campos estão declarados como \texttt{private}, sendo apenas possível aceder fazendo uso de um
+\textit{getter} e alterando o seu valor com um \textit{setter}.
+
+A implementação destas classes encontra-se no anexo~\ref{a3}.

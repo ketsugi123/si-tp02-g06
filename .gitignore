@@ -1,2 +1,25 @@
 /target
 .idea
+# LaTex auxiliary files
+*.blg
+*.aux
+*.log
+*.dvi
+*.bbl
+*.toc
+*.lot
+*.lof
+*.idx
+*.ilg
+*.lol
+*.out
+*.run.xml
+*.synctex.gz
+*-blx.bib
+*.nlo
+*.nls
+# Minted temp files
+Report/src/_minted-Relatorio
+# Drawio temp files
+*.dtmp
+*.bkp

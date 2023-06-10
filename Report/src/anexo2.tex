@@ -1,0 +1,199 @@
+%
+% Anexo 2
+%
+\chapter{Código das Classes do \textit{Package} \texttt{model.relations}} \label{a2}
+
+Estas listagens contêm código correspondente às classes presentes no \textit{package} \texttt{relations}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.relations;
+
+import jakarta.persistence.*;
+import model.tables.Jogador;
+import model.tables.Jogo;
+import model.embeddables.CompraId;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+
+@Entity
+@Table(name="compra")
+public class Compra implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Compra() { }
+
+    @EmbeddedId
+    private CompraId id;
+    private Date data;
+    private Double preco;
+
+
+    // N:N relation Compra between jogo and jogador
+    @ManyToOne
+    @MapsId("jogo")
+    @JoinColumn(name = "jogo")
+    private Jogo jogo;
+
+    @ManyToOne
+    @MapsId("jogador")
+    @JoinColumn(name = "jogador")
+    private Jogador jogador;
+
+    //getter and setters
+    public Jogador getJogador() { return jogador; }
+
+    public void setJogador(Jogador jogador) { this.jogador = jogador; }
+
+    public Jogo getJogo() { return jogo; }
+
+    public void setJogo(Jogo jogo) { this.jogo = jogo; }
+
+    public CompraId getId() { return this.id; }
+
+    public Date getData() { return data; }
+
+    public void setData(Date data) { this.data = data; }
+
+    public void setPreco(Double preco) { this.preco = preco;}
+    public Double getPreco() { return preco; }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe Compra\label{lst:Compra}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.relations;
+
+import jakarta.persistence.*;
+import model.tables.Cracha;
+import model.tables.Jogador;
+import model.embeddables.CrachasAdquiridosId;
+
+import java.io.Serializable;
+
+@Entity
+@Table(name="crachá_jogador")
+public class CrachasAdquiridos implements Serializable {
+
+    @EmbeddedId
+    private CrachasAdquiridosId id;
+
+
+    // N:N realtion CrachasAdquiridos
+    @ManyToOne
+    @MapsId("jogador")
+    @JoinColumn(name="jogador",  referencedColumnName = "jogador")
+    private Jogador jogador;
+
+
+    @ManyToOne
+    @JoinColumns({
+            @JoinColumn(name = "cracha_nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "cracha_jogador", referencedColumnName = "jogador")
+    })
+    private Cracha cracha;
+
+
+    public CrachasAdquiridosId getId() {
+        return id;
+    }
+
+    public void setId(CrachasAdquiridosId id) {
+        this.id = id;
+    }
+
+    public Cracha getCracha() {
+        return cracha;
+    }
+
+    public void setCracha(Cracha cracha) {
+        this.cracha = cracha;
+    }
+
+    public Jogador getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(Jogador jogador) {
+        this.jogador = jogador;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe CrachasAdquiridos\label{lst:CrachasAdquiridos}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.relations;
+
+import jakarta.persistence.*;
+import model.tables.Conversa;
+import model.tables.Jogador;
+import model.embeddables.ParticipaId;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+@Entity
+@Table(name = "jogador_conversa")
+public class Participa implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Participa(){ }
+    @EmbeddedId
+    private ParticipaId id;
+
+    @ManyToOne
+    @MapsId("jogador")
+    @JoinColumn(name="jogador")
+    private Jogador jogador;
+
+    @ManyToOne
+    @MapsId("conversa")
+    @JoinColumn(name="conversa")
+    private Conversa conversa;
+
+
+    //getters and setters
+    public ParticipaId getId() {return id;}
+
+    public void setId(ParticipaId id) { this.id = id; }
+
+    public Jogador getJogador() { return jogador; }
+
+    public void setJogador(Jogador jogador) { this.jogador = jogador; }
+
+    public Conversa getConversa() { return conversa; }
+
+    public void setConversa(Conversa conversa) { this.conversa = conversa; }
+}
+\end{minted}
+\captionof{listing}{Código da classe Participa\label{lst:Participa}}

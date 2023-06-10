@@ -1,0 +1,25 @@
+%
+% Capítulo 1
+%
+\chapter{Introdução} \label{cap1}
+
+Uma base de dados por ela mesma tem o seu mérito, quando bem estruturada e implementada é uma mais valia para qualquer empresa que procure organizar a sua informação. No entanto
+esta não deve permanecer sozinha, se for acompanhada por uma aplicação capaz de comunicar numa outra linguagem de programação, a base de dados pode ser utilizada por aplicações
+e programas de computador com mais flexibilidade no seu uso.
+
+Por forma a cumprir este objetivo foi desenvolvida uma aplicação \textit{Java} que faz uso da biblioteca \texttt{JPA}, através da qual irá criar um modelo de dados e comunicar
+com a base de dados remota.
+
+%
+% Secção 1.1
+%
+\section{Objetivos} \label{sec11}
+
+Em primeiro lugar é necessário implementar o modelo de dados ao nível aplicacional. Para este efeito a biblioteca \texttt{JPA} permite usar anotações do \textit{Java} para determinar
+o tipo de casa campo de uma classe e como este deve interagir com os tipos de \textit{PostgreSQL} \cite{postgresql:docs}.
+
+Esta aplicação deverá ser capaz de permitir a um programador que a utilize de aceder a todas as funcionalidades presentes na fase 1, logo deverá implementar funções que façam uso
+das funções, procedimentos armazenados, vistas e gatilhos presentes no modelo de base de dados.
+
+Para além de apresentar uma interface para acesso à base de dados esta aplicação deve também permitir ao programador escolher certas funcionalidades entre \textit{optimistic locking}
+e \textit{pessimistic locking}.

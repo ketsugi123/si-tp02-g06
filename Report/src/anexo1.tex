@@ -1,0 +1,317 @@
+%
+% Anexo 1
+%
+\chapter{Código das Classes do \textit{Package} \texttt{model.embeddables}} \label{a1}
+Neste anexo encontra-se a implementação das várias classes do \textit{package} \texttt{Embeddables}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+import java.io.Serializable;
+
+// Composite key for table Compra
+@Embeddable
+public class CompraId implements Serializable {
+    private int jogador;
+    private String jogo;
+
+    public CompraId(){}
+    public void setJogoId(String jogo) {
+        this.jogo = jogo;
+    }
+
+    public String getJogoId() {
+        return jogo;
+    }
+
+    public void setJogadorId(int jogador) {
+        this.jogador = jogador;
+    }
+
+    public int getJogadorId() {
+        return jogador;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe CompraId\label{lst:CompraId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+// Composite jey for table cracha
+@Embeddable
+public class CrachaId implements Serializable {
+    private String nome;
+    private String jogo;
+
+    public CrachaId(){}
+    public String getNome() {
+        return nome;
+    }
+
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public String getJogo() {
+        return jogo;
+    }
+
+    public void setJogo(String jogo) {
+        this.jogo = jogo;
+    }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe CrachaId\label{lst:CrachaId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+@Embeddable
+public class CrachasAdquiridosId implements Serializable {
+    private int jogo;
+    private String jogador;
+    private String cracha;
+
+    public CrachasAdquiridosId(){}
+    public void setJogo(int jogo) {
+        this.jogo = jogo;
+    }
+
+    public int getJogo() {
+        return jogo;
+    }
+
+    public void setJogador(String jogador) {
+        this.jogador = jogador;
+    }
+
+    public String getJogador() {
+        return jogador;
+    }
+
+    public void setCracha(String cracha) {
+        this.cracha = cracha;
+    }
+
+    public String getCracha() {
+        return cracha;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe CrachasAdquiridosId\label{lst:CrachasAdquiridosId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
+import java.io.Serializable;
+
+//Composite key for table mensagem
+@Embeddable
+public class MensagemId implements Serializable {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private int conversa;
+
+    public MensagemId(){ }
+    public void setid(int id) {
+        this.id = id;
+    }
+
+    public int getid() {
+        return id;
+    }
+
+    public int getConversa() {
+        return conversa;
+    }
+    public void setConversa(int conversa) {
+        this.conversa = conversa;
+    }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe MensagemId\label{lst:MensagemId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+//Composite key for jogador_conversa rewlation participa
+@Embeddable
+public class ParticipaId implements Serializable {
+    private int jogador;
+    private int conversa;
+
+    public ParticipaId(){}
+
+    public void setJogadorId(int jogador) {
+        this.jogador = jogador;
+    }
+
+    public int getJogadorId() {
+        return jogador;
+    }
+
+    public void setConversaId(int conversa) {
+        this.conversa = conversa;
+    }
+
+    public int getConversaId() {
+        return conversa;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe ParticipaId\label{lst:ParticipaId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+
+import java.io.Serializable;
+
+// Composite Primary key for Partida
+@Embeddable
+public class PartidaId implements Serializable {
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int partida;
+    private String jogo;
+
+    public PartidaId(){}
+    public void setPartidaId(int partida) {
+        this.partida = partida;
+    }
+
+    public int getPartidaId() {
+        return partida;
+    }
+
+    public void setJogoId(String jogo) {
+        this.jogo = jogo;
+    }
+
+    public String getJogoId() {
+        return jogo;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe PartidaId\label{lst:PartidaId}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.embeddables;
+
+import jakarta.persistence.Embeddable;
+
+import java.io.Serializable;
+
+// Composite Primary key for Partida_Normal and Partida_MultiJogador
+@Embeddable
+public class PartidaNMId implements Serializable {
+    int partida;
+    String jogo;
+    int jogador;
+
+    public PartidaNMId(){}
+
+    public void setPartida(int partidaId) {
+        this.partida = partidaId;
+    }
+
+    public int getPartida() {
+        return partida;
+    }
+
+    public String getJogo() {
+        return jogo;
+    }
+
+    public int getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(int jogadorId) {
+        this.jogador = jogadorId;
+    }
+
+    public void setJogo(String jogoId) {
+        this.jogo = jogoId;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe PartidaNMId\label{lst:PartidaNMId}}
