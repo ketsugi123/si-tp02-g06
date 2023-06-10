@@ -18,6 +18,7 @@ public class Jogador implements Serializable {
 
     public Jogador(){ }
 
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;

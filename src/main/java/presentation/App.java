@@ -70,7 +70,11 @@ public class App
 				() -> {
 					try { srv.jogadorTotalInfo(); }
 					catch (Exception e) { System.out.println(e); }
-				}
+				},
+				() -> {
+					try { srv.associarCrachaModel(1, "rDo65hoDwl", "Pro player");}
+					catch (Exception e){ System.out.println(e); }
+				},
 		  };
 
 		while(true){

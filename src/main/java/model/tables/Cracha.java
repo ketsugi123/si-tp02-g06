@@ -10,7 +10,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name="crachá")
+@Table(name="cracha")
 @Entity
 public class Cracha implements Serializable {
 
