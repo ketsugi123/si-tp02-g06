@@ -244,10 +244,32 @@ public class BLService
         }
     }
 
-    /*
-     * 1. (b)
-     * Functionality 2h without stored procedures or functions
-     */
-    //
+    //2 (a)
+    public void aumentarPontosCracha20(String nomeCracha, String idJogo) {
+        EntityTransaction transaction = startTransaction();
+        Connection cn = em.unwrap(Connection.class);
+        try {
+            setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+            String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
+            TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
+            selectTypedQuery.setParameter(1, nomeCracha);
+            selectTypedQuery.setParameter(2, idJogo);
+            Cracha cracha = selectTypedQuery.getSingleResult();
+            setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+            String query =
+                    "UPDATE crachá c SET c.limit = c.limit * 1.2, c.version = c.version + 1 " +
+                            "WHERE c.id = :crachaId AND c.version = :crachaVersion";
+            Query updateQuery = em.createNativeQuery(query);
+            updateQuery.setParameter("crachaId", cracha.getId());
+            updateQuery.setParameter("crachaVersion", Cracha.getSerialVersionUID());
+            int updatedCount = updateQuery.executeUpdate();
+            if (updatedCount == 0) {
+                throw new OptimisticLockException("Concurrent update detected for Cracha");
+            }
+            transaction.commit();
+        } catch (Exception e) {
+            if (transaction.isActive()) transaction.rollback();
+        }
+    }
 
 }

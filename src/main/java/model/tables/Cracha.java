@@ -4,6 +4,8 @@ package model.tables;
 import jakarta.persistence.*;
 import model.embeddables.CrachaId;
 import model.relations.CrachasAdquiridos;
+import org.eclipse.persistence.annotations.OptimisticLocking;
+import org.eclipse.persistence.annotations.OptimisticLockingType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -12,6 +14,7 @@ import java.util.List;
 
 @Table(name="cracha")
 @Entity
+@OptimisticLocking(type=OptimisticLockingType.CHANGED_COLUMNS)
 public class Cracha implements Serializable {
 
     @Serial
