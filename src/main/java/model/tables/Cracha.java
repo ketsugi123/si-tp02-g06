@@ -17,6 +17,10 @@ public class Cracha implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
     @EmbeddedId
     private CrachaId id;
 

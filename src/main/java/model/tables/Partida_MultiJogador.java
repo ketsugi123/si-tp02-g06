@@ -1,34 +1,35 @@
 package model.tables;
 
 import jakarta.persistence.*;
-import model.embeddables.PartidaNMId;
+import model.embeddables.PartidaMId;
+import model.embeddables.PartidaNId;
 
 import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@Table(name="partida_normal")
+@Table(name="partida_multijogador")
 public class Partida_MultiJogador implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
     public Partida_MultiJogador() { }
 
-    @Id
-    private PartidaNMId partida_multiId;
+    @EmbeddedId
+    private PartidaMId partida_multiId;
 
     int pontuacao;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumns({
-            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida"),
-            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo")
+            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
     })
     private Partida partida;
 
     @MapsId("jogador")
     @ManyToOne
-    @JoinColumn(name = "partidaM_jogador", referencedColumnName = "jogador")
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
     private Jogador jogador;
 
     public Jogador getJogador() {
@@ -47,11 +48,11 @@ public class Partida_MultiJogador implements Serializable {
         this.pontuacao = pontuacao;
     }
 
-    public void setPartida_multiId(PartidaNMId partida) {
+    public void setPartida_multiId(PartidaMId partida) {
         this.partida_multiId = partida;
     }
 
-    public PartidaNMId getPartida_multiId() {
+    public PartidaMId getPartida_multiId() {
         return partida_multiId;
     }
 

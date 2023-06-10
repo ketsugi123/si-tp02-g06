@@ -1,7 +1,7 @@
 package model.tables;
 
 import jakarta.persistence.*;
-import model.embeddables.PartidaNMId;
+import model.embeddables.PartidaNId;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,14 +16,14 @@ public class Partida_Normal implements Serializable {
     public Partida_Normal() { }
 
     @EmbeddedId
-    private PartidaNMId partida_normalId;
+    private PartidaNId partida_normalId;
 
     private int pontuacao;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumns({
-            @JoinColumn(name = "partidaN_partida", referencedColumnName = "partida"),
-            @JoinColumn(name = "partidaN_jogo", referencedColumnName = "jogo")
+            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
     })
     private Partida partida;
 
@@ -33,7 +33,7 @@ public class Partida_Normal implements Serializable {
 
     @MapsId("jogador")
     @ManyToOne
-    @JoinColumn(name = "partidaN_jogador", referencedColumnName = "jogador")
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
     private Jogador jogador;
 
     public Jogador getJogador() {
@@ -44,11 +44,11 @@ public class Partida_Normal implements Serializable {
         this.jogador = jogador;
     }
 
-    public PartidaNMId getPartida_normalId() {
+    public PartidaNId getPartida_normalId() {
         return partida_normalId;
     }
 
-    public void setPartida_normalId(PartidaNMId partida) {
+    public void setPartida_normalId(PartidaNId partida) {
         this.partida_normalId = partida;
     }
 

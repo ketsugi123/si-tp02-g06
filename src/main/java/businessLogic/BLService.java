@@ -21,9 +21,12 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+
+import businessLogic.Utlis.PontosPorJogador;
 import jakarta.persistence.*;
+import model.tables.Cracha;
 import model.views.JogadorTotalInfo;
-import org.postgresql.shaded.com.ongres.scram.common.util.UsAsciiUtils;
 
 /**
  * Hello world!
@@ -92,7 +95,7 @@ public class BLService
         String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
         Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
         jogadoresFunctionQuery.setParameter(1, idJogo);
-        String pontuacaoQuery = "SELECT pontuaçãoTotal from PontosJogosPorJogador(?1)";
+        String pontuacaoQuery = "SELECT pontuacaoTotal from PontosJogosPorJogador(?1)";
         Query pontuacaoFunctionQuery = em.createNativeQuery(pontuacaoQuery);
         pontuacaoFunctionQuery.setParameter(1, idJogo);
         List<Integer> idList = jogadoresFunctionQuery.getResultList();
@@ -195,8 +198,50 @@ public class BLService
         }
     }
 
-    public void associarCrachaModel(int idJogador, String idJogo, String nomeCracha){
+    public void pontosJogosPorJogadorModel(String idJogo)
+    {
+        Query q = em.createQuery("SELECT pn.partida_normalId.jogador, COALESCE(SUM(pn.pontuacao), 0) FROM Partida_Normal pn " +
+                "WHERE pn.partida_normalId.partida IN (SELECT pn.partida_normalId.partida FROM Partida p WHERE p.id.jogo = ?1) " +
+                "GROUP BY pn.partida_normalId.jogador " +
+                "UNION " +
+                "SELECT pm.partida_multiId.jogador, COALESCE(SUM(pm.pontuacao), 0) FROM Partida_MultiJogador pm " +
+                "WHERE pm.partida_multiId.partida IN (SELECT pm.partida_multiId.partida FROM Partida p1 WHERE p1.id.jogo = ?1) " +
+                "GROUP BY pm.partida_multiId.jogador");
 
+
+        List<PontosPorJogador> lst = q.getResultList();
+        for(PontosPorJogador p : lst){
+
+        }
+    }
+
+    public void associarCrachaModel(int idJogador, String idJogo, String nomeCracha){
+        TypedQuery<String> crachaExistsQuery =
+                em.createQuery(
+                        "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",
+                        String.class
+                );
+        crachaExistsQuery.setParameter("idJogo", idJogo);
+        crachaExistsQuery.setParameter("nomeCracha", nomeCracha);
+        String foundIdJogo = crachaExistsQuery.getSingleResult();
+
+        if(foundIdJogo.equals(idJogo)){
+            TypedQuery<Integer> getLimitPoints = em.createQuery(
+                    "select c.limit from Cracha c where c.id.nome = :nomeCracha",
+                    Integer.class
+            );
+            Integer limit = getLimitPoints.getSingleResult();
+
+            TypedQuery<Integer> getPlayerId = em.createQuery(
+                    "select c.jogador.id from Compra c "  +
+                    "where c.jogador.id = :idJogador and c.jogo.id = :idJogo",
+                    Integer.class
+            );
+            if(idJogador == getPlayerId.getSingleResult()){
+
+            }
+
+        }
     }
 
     /*
