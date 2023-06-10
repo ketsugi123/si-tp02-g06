@@ -52,16 +52,6 @@ public class Cracha implements Serializable {
         this.crachasAdquiridosList.add(crachasAdquiridos);
     }
 
-    @OneToMany(mappedBy = "cracha", cascade = CascadeType.PERSIST)
-    private List<Jogador> jogadores = new ArrayList<>();
-
-    public List<Jogador> getJogadores() {
-        return jogadores;
-    }
-
-    public void addJogadpr(Jogador jogador) {
-        this.jogadores.add(jogador);
-    }
 
     public CrachaId getId() {
         return this.id;

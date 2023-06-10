@@ -33,12 +33,7 @@ public class Jogador implements Serializable {
 
 
     //N:N Crachas
-    @ManyToOne
-    @JoinColumns({
-            @JoinColumn(name = "jogadorCracha_nome", referencedColumnName = "nome"),
-            @JoinColumn(name = "jogador", referencedColumnName = "jogador")
-    })
-    private Cracha cracha;
+
     @OneToMany(mappedBy = "jogador")
     private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 

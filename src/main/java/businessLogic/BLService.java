@@ -251,7 +251,8 @@ public class BLService
                         crachaAdquirido.setCracha(getCracha.getSingleResult());
 
                         getJogador.setParameter(1, idJogador);
-                        crachaAdquirido.setJogador(getJogador.getSingleResult());
+                        Jogador jogador = getJogador.getSingleResult();
+                        crachaAdquirido.setJogador(jogador);
                         em.getTransaction().begin();
                         em.persist(crachaAdquirido);
                         em.getTransaction().commit();
