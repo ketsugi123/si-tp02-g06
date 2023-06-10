@@ -75,10 +75,6 @@ public class App
 					try { srv.associarCrachaModel(1, "rDo65hoDwl", "Pro player");}
 					catch (Exception e){ System.out.println(e); }
 				},
-				() -> {
-					try { srv.pontosJogosPorJogadorModel("rDo65hoDwl");}
-					catch (Exception e){ System.out.println(e); }
-				}
 		  };
 
 		while(true){

@@ -21,11 +21,13 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-import businessLogic.Utlis.PontosPorJogador;
+
 import jakarta.persistence.*;
+import model.embeddables.CrachasAdquiridosId;
+import model.relations.CrachasAdquiridos;
 import model.tables.Cracha;
+import model.tables.Jogador;
 import model.views.JogadorTotalInfo;
 
 /**
@@ -198,22 +200,6 @@ public class BLService
         }
     }
 
-    public void pontosJogosPorJogadorModel(String idJogo)
-    {
-        Query q = em.createQuery("SELECT pn.partida_normalId.jogador, COALESCE(SUM(pn.pontuacao), 0) FROM Partida_Normal pn " +
-                "WHERE pn.partida_normalId.partida IN (SELECT pn.partida_normalId.partida FROM Partida p WHERE p.id.jogo = ?1) " +
-                "GROUP BY pn.partida_normalId.jogador " +
-                "UNION " +
-                "SELECT pm.partida_multiId.jogador, COALESCE(SUM(pm.pontuacao), 0) FROM Partida_MultiJogador pm " +
-                "WHERE pm.partida_multiId.partida IN (SELECT pm.partida_multiId.partida FROM Partida p1 WHERE p1.id.jogo = ?1) " +
-                "GROUP BY pm.partida_multiId.jogador");
-
-
-        List<PontosPorJogador> lst = q.getResultList();
-        for(PontosPorJogador p : lst){
-
-        }
-    }
 
     public void associarCrachaModel(int idJogador, String idJogo, String nomeCracha){
         TypedQuery<String> crachaExistsQuery =
@@ -227,9 +213,10 @@ public class BLService
 
         if(foundIdJogo.equals(idJogo)){
             TypedQuery<Integer> getLimitPoints = em.createQuery(
-                    "select c.limit from Cracha c where c.id.nome = :nomeCracha",
+                    "select c.limite from Cracha c where c.id.nome = :nomeCracha",
                     Integer.class
             );
+            getLimitPoints.setParameter("nomeCracha", nomeCracha);
             Integer limit = getLimitPoints.getSingleResult();
 
             TypedQuery<Integer> getPlayerId = em.createQuery(
@@ -237,7 +224,40 @@ public class BLService
                     "where c.jogador.id = :idJogador and c.jogo.id = :idJogo",
                     Integer.class
             );
+            getPlayerId.setParameter("idJogador", idJogador);
+            getPlayerId.setParameter("idJogo", idJogo);
             if(idJogador == getPlayerId.getSingleResult()){
+                String jogadoresQuery = "SELECT pontuacaoTotal from PontosJogosPorJogador(?1) WHERE jogadores = ?2";
+                Query pontuacaoQuery = em.createNativeQuery(jogadoresQuery);
+                pontuacaoQuery.setParameter(1, idJogo);
+                pontuacaoQuery.setParameter(2, idJogador);
+                BigDecimal totalPoints = (BigDecimal) pontuacaoQuery.getSingleResult();
+                if(limit <= totalPoints.intValue() ){
+                    Query q = em.createQuery("SELECT ca.id.jogo from CrachasAdquiridos ca WHERE ca.id.jogador = ?1");
+                    q.setParameter(1, idJogador);
+                    if(q.getResultList().isEmpty()){
+                        TypedQuery<Cracha> getCracha = em.createQuery("SELECT c FROM Cracha c where c.id.nome = ?1", Cracha.class);
+                        TypedQuery<Jogador> getJogador = em.createQuery("SELECT j from Jogador j WHERE j.id = ?1", Jogador.class);
+                        CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
+                        CrachasAdquiridosId cid = new CrachasAdquiridosId();
+
+                        cid.setJogo(idJogo);
+                        cid.setCracha(nomeCracha);
+                        cid.setJogador(idJogador);
+
+                        crachaAdquirido.setId(cid);
+
+                        getCracha.setParameter(1, nomeCracha);
+                        crachaAdquirido.setCracha(getCracha.getSingleResult());
+
+                        getJogador.setParameter(1, idJogador);
+                        crachaAdquirido.setJogador(getJogador.getSingleResult());
+                        em.getTransaction().begin();
+                        em.persist(crachaAdquirido);
+                        em.getTransaction().commit();
+                    }
+
+                }
 
             }
 

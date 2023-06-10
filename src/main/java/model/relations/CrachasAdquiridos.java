@@ -8,7 +8,7 @@ import model.embeddables.CrachasAdquiridosId;
 import java.io.Serializable;
 
 @Entity
-@Table(name="crachá_jogador")
+@Table(name="cracha_jogador")
 public class CrachasAdquiridos implements Serializable {
 
     @EmbeddedId
