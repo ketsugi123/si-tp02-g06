@@ -40,11 +40,11 @@ public class Cracha implements Serializable {
     @OneToMany(mappedBy = "cracha")
     private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 
-    public List<CrachasAdquiridos> getGanhouList() {
+    public List<CrachasAdquiridos> getCrachasList() {
         return crachasAdquiridosList;
     }
 
-    public void addGanhou(CrachasAdquiridos crachasAdquiridos) {
+    public void addCrachas(CrachasAdquiridos crachasAdquiridos) {
         this.crachasAdquiridosList.add(crachasAdquiridos);
     }
 

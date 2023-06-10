@@ -31,7 +31,7 @@ public class Jogador implements Serializable {
     public List<Compra> getCompras() { return compras; }
 
 
-    //N:N ganhou
+    //N:N Crachas
     @ManyToOne
     @JoinColumns({
             @JoinColumn(name = "jogadorCracha_nome", referencedColumnName = "nome"),
@@ -41,7 +41,7 @@ public class Jogador implements Serializable {
     @OneToMany(mappedBy = "jogador")
     private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
 
-    public List<CrachasAdquiridos> getGanhouList() {
+    public List<CrachasAdquiridos> getCrachasList() {
         return crachasAdquiridosList;
     }
 

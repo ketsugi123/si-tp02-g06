@@ -19,12 +19,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
 import jakarta.persistence.*;
-import jakarta.persistence.criteria.CriteriaBuilder;
+import model.views.JogadorTotalInfo;
+import org.postgresql.shaded.com.ongres.scram.common.util.UsAsciiUtils;
 
 /**
  * Hello world!
@@ -96,8 +95,8 @@ public class BLService
         String pontuacaoQuery = "SELECT pontuaçãoTotal from PontosJogosPorJogador(?1)";
         Query pontuacaoFunctionQuery = em.createNativeQuery(pontuacaoQuery);
         pontuacaoFunctionQuery.setParameter(1, idJogo);
-        List<Integer> idList = (List<Integer>) jogadoresFunctionQuery.getResultList();
-        List<BigDecimal> pointsList = (List<BigDecimal>) pontuacaoFunctionQuery.getResultList();
+        List<Integer> idList = jogadoresFunctionQuery.getResultList();
+        List<BigDecimal> pointsList = pontuacaoFunctionQuery.getResultList();
         ArrayList<Map<Integer, BigDecimal>> resultList = new ArrayList<>();
         int numberOfPlayers = idList.size();
         for (int i = 0; i < numberOfPlayers; i++) {
@@ -107,7 +106,7 @@ public class BLService
     }
 
     // Exercise 2h
-    public void associarCracha(int idJogador, String idJogo, String nomeCracha) throws SQLException {
+    public void associarCracha(int idJogador, String idJogo, String nomeCracha) {
         EntityTransaction transaction = startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
@@ -180,14 +179,30 @@ public class BLService
         }
     }
 
-    public Table jogadorTotalInfo(){
-        return null;
+    public void jogadorTotalInfo(){
+        String query = "Select * from jogadorTotalInfo";
+        Query q = em.createNativeQuery(query, JogadorTotalInfo.class);
+        List<JogadorTotalInfo> allInfo =  q.getResultList();
+        for(JogadorTotalInfo jogador: allInfo){
+            System.out.println(
+                    jogador.getEstado() + " " +
+                    jogador.getEmail() + " " +
+                    jogador.getUsername() + " " +
+                    jogador.getJogosParticipados() + " " +
+                    jogador.getPartidasParticipadas() + " " +
+                    jogador.getPontuacaoTotal() + " "
+            );
+        }
     }
 
-    /**
+    public void associarCrachaModel(int idJogador, String idJogo, String nomeCracha){
+
+    }
+
+    /*
      * 1. (b)
      * Functionality 2h without stored procedures or functions
      */
-    //TODO
+    //
 
 }
