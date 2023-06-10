@@ -293,15 +293,22 @@ public class BLService
             transaction.commit();
         } catch (Exception e) {
             if (transaction.isActive()) transaction.rollback();
+            System.out.println("Error Message: " + e.getMessage());
         }
     }
 
-    //2 (a)
+    /**
+     * 2.(a), 2.(b), 2.(c)
+     */
+
+    // Exercise 2 (a)
     public void aumentarPontosOptimistic(String nomeCracha, String idJogo) {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
     }
 
-    //2 (c)
+    // Exercise 2 (b) -> Inside Test Folder
+
+    // Exercise 2 (c)
     public void aumentarPontosPessimistic(String nomeCracha, String idJogo, LockModeType lockType) {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
     }
