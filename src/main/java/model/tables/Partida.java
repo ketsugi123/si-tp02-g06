@@ -26,6 +26,7 @@ public class Partida implements Serializable {
 
     Date dtfim;
 
+    // 1:N
     @MapsId("jogo")
     @ManyToOne
     @JoinColumn(name = "jogo")
@@ -41,6 +42,28 @@ public class Partida implements Serializable {
 
     public PartidaId getId() {
         return id;
+    }
+
+    @OneToOne(mappedBy = "partida")
+    private Partida_MultiJogador partida_multiJogador;
+
+    public Partida_MultiJogador getPartida_multiJogador() {
+        return partida_multiJogador;
+    }
+
+    public void setPartida_multiJogador(Partida_MultiJogador partida_multiJogador) {
+        this.partida_multiJogador = partida_multiJogador;
+    }
+
+    @OneToOne(mappedBy = "partida")
+    private Partida_Normal partida_normal;
+
+    public Partida_Normal getPartida_normal() {
+        return partida_normal;
+    }
+
+    public void setPartida_normal(Partida_Normal partida_normal) {
+        this.partida_normal = partida_normal;
     }
 
     public void setId(PartidaId id) {

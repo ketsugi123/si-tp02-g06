@@ -28,8 +28,8 @@ public class Cracha implements Serializable {
 
     String url;
 
-    @MapsId("jogo")
     @ManyToOne
+    @MapsId
     @JoinColumn(name="jogo")
     private Jogo jogo;
 

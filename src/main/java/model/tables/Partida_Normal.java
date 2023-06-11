@@ -22,8 +22,8 @@ public class Partida_Normal implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumns({
-            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
-            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+            @JoinColumn(name = "partidaN_partida", referencedColumnName = "partida"),
+            @JoinColumn(name = "partidaN_jogo", referencedColumnName = "jogo")
     })
     private Partida partida;
 
@@ -31,9 +31,9 @@ public class Partida_Normal implements Serializable {
         return partida;
     }
 
-    @MapsId("jogador")
     @ManyToOne
-    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+    @MapsId
+    @JoinColumn(name = "partidaN_jogador", referencedColumnName = "jogador")
     private Jogador jogador;
 
     public Jogador getJogador() {

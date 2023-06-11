@@ -22,8 +22,9 @@ public class Mensagem implements Serializable {
 
     Date data;
 
-    @MapsId("conversa")
+
     @ManyToOne
+    @MapsId
     @JoinColumn(name="conversa")
     private Conversa conversa;
 

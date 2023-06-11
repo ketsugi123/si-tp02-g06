@@ -66,6 +66,9 @@ public class Jogador implements Serializable {
     @OneToMany(mappedBy = "jogador", cascade = CascadeType.PERSIST)
     private List<Partida_MultiJogador> partidasMultiJogador = new ArrayList<>();
 
+    public void addPartidaMultiJogador(Partida_MultiJogador partida){
+        this.partidasMultiJogador.add(partida);
+    }
     public List<Partida_MultiJogador> getPartidasMultiJogador() {
         return partidasMultiJogador;
     }
