@@ -9,9 +9,6 @@ import java.util.Date;
 
 @Entity
 @Table(name="partida")
-@Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name = "partida_type")
-@DiscriminatorValue("super")
 public class Partida implements Serializable {
 
     @Serial
@@ -30,9 +27,9 @@ public class Partida implements Serializable {
     Date dtfim;
 
     // 1:N
-    @MapsId("jogo")
     @ManyToOne
-    @JoinColumn(name = "jogo")
+    @MapsId
+    @JoinColumn(name = "id")
     private Jogo jogo;
 
     public void setJogo(Jogo jogo) {

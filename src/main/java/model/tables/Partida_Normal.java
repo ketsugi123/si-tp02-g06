@@ -7,11 +7,6 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@DiscriminatorValue("MULTIJOGADOR")
-@PrimaryKeyJoinColumns ({
-        @PrimaryKeyJoinColumn(name = "partida", referencedColumnName = "partida"),
-        @PrimaryKeyJoinColumn(name = "jogo", referencedColumnName = "jogo")
-})
 @Table(name="partida_normal")
 public class Partida_Normal extends Partida implements Serializable {
 
@@ -25,6 +20,16 @@ public class Partida_Normal extends Partida implements Serializable {
 
     private int pontuacao;
 
+    @OneToOne
+    @JoinColumns({
+            @JoinColumn(name = "partidaN_partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "partidaN_jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+    })
+    private Partida partida;
+
+    public Partida getPartida() {
+        return partida;
+    }
 
     @ManyToOne
     @MapsId

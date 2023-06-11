@@ -8,13 +8,8 @@ import java.io.Serial;
 import java.io.Serializable;
 
 @Entity
-@DiscriminatorValue("MULTIJOGADOR")
-@PrimaryKeyJoinColumns ({
-        @PrimaryKeyJoinColumn(name = "partida", referencedColumnName = "partida"),
-        @PrimaryKeyJoinColumn(name = "jogo", referencedColumnName = "jogo")
-})
 @Table(name="partida_multijogador")
-public class Partida_MultiJogador extends Partida implements Serializable {
+public class Partida_MultiJogador implements Serializable {
     @Serial
     private static final long serialVersionUID = 1L;
 
@@ -24,6 +19,13 @@ public class Partida_MultiJogador extends Partida implements Serializable {
     private PartidaMId partida_multiId;
 
     int pontuacao;
+
+    @OneToOne
+    @JoinColumns({
+            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+    })
+    private Partida partida;
 
 
     @ManyToOne
@@ -39,6 +41,9 @@ public class Partida_MultiJogador extends Partida implements Serializable {
         this.jogador = jogador;
     }
 
+    public Partida getPartida() {
+        return partida;
+    }
 
     public void setPontuacao(int pontuacao) {
         this.pontuacao = pontuacao;
