@@ -26,13 +26,13 @@ public class Compra implements Serializable {
 
     // N:N relation Compra between jogo and jogador
     @ManyToOne
-    @MapsId("jogo")
-    @JoinColumn(name = "jogo")
+    @MapsId
+    @JoinColumn(name = "jogo", referencedColumnName = "id")
     private Jogo jogo;
 
     @ManyToOne
-    @MapsId("jogador")
-    @JoinColumn(name = "jogador")
+    @MapsId
+    @JoinColumn(name = "jogador", referencedColumnName = "id")
     private Jogador jogador;
 
     //getter and setters

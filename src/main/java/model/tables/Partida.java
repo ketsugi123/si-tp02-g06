@@ -9,6 +9,9 @@ import java.util.Date;
 
 @Entity
 @Table(name="partida")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "partida_type")
+@DiscriminatorValue("super")
 public class Partida implements Serializable {
 
     @Serial

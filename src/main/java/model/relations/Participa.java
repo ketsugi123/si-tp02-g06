@@ -21,12 +21,12 @@ public class Participa implements Serializable {
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name="jogador")
+    @JoinColumn(name="jogador", referencedColumnName = "id")
     private Jogador jogador;
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name="conversa")
+    @JoinColumn(name="conversa", referencedColumnName = "id")
     private Conversa conversa;
 
 
