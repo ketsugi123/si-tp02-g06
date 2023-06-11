@@ -28,6 +28,7 @@ import model.embeddables.CrachasAdquiridosId;
 import model.relations.CrachasAdquiridos;
 import model.tables.Cracha;
 import model.tables.Jogador;
+import model.tables.Jogo;
 import model.views.JogadorTotalInfo;
 
 /**
@@ -51,6 +52,12 @@ public class BLService
         transaction.begin();
     }
     //@SuppressWarnings("unchecked")
+
+    private Jogo getGameByName(String gameName){
+        TypedQuery<Jogo> query = em.createQuery("SELECT j FROM Jogo j WHERE j.nome = ?1", Jogo.class);
+        query.setParameter(1, gameName);
+        return query.getSingleResult();
+    }
 
     /**
      * 1. (a)
@@ -93,7 +100,8 @@ public class BLService
     }
 
     // Exercise 2g (Temporary implementation, not optimized)
-    public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String idJogo) {
+    public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String gameName) {
+        String idJogo = getGameByName(gameName).getId();
         String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
         Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
         jogadoresFunctionQuery.setParameter(1, idJogo);
@@ -111,9 +119,10 @@ public class BLService
     }
 
     // Exercise 2h
-    public void associarCracha(int idJogador, String idJogo, String nomeCracha) {
+    public void associarCracha(int idJogador, String gameName, String nomeCracha) {
         EntityTransaction transaction = startTransaction();
         Connection cn = em.unwrap(Connection.class);
+        String idJogo = getGameByName(gameName).getNome();
         try {
             setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
@@ -201,7 +210,8 @@ public class BLService
     }
 
 
-    public void associarCrachaModel(int idJogador, String idJogo, String nomeCracha){
+    public void associarCrachaModel(int idJogador, String gameName, String nomeCracha){
+        String idJogo = getGameByName(gameName).getId();
         TypedQuery<String> crachaExistsQuery =
                 em.createQuery(
                         "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",

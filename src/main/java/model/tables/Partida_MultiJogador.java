@@ -22,15 +22,15 @@ public class Partida_MultiJogador implements Serializable {
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumns({
-            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida", insertable = false, updatable = false),
-            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida"),
+            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo")
     })
     private Partida partida;
 
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name = "patida_jogador", referencedColumnName = "jogador")
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
     private Jogador jogador;
 
     public Jogador getJogador() {

@@ -33,7 +33,7 @@ public class Partida_Normal implements Serializable {
 
     @ManyToOne
     @MapsId
-    @JoinColumn(name = "partidaN_jogador", referencedColumnName = "jogador")
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
     private Jogador jogador;
 
     public Jogador getJogador() {

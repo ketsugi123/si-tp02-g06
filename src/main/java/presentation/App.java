@@ -34,45 +34,56 @@ public class App
 		BLService srv = new BLService();
 		ITest[] tests = new ITest[] {
 				() -> {
+					System.out.println("\n\n\n ------------------- CREATE PLAYER --------------------");
 					try { System.out.println( srv.createPlayer("player1", "player1@email.com", "EU") ); }
 					catch(Exception e) { System.out.println(e); }},
 				() -> {
+					System.out.println("\n\n\n ------------------- SET PLAYER STATE --------------------");
 					try { System.out.println(srv.setPlayerState(1, "Banido")); }
 					catch(Exception e) {System.out.println(e);}},
 				() -> {
+					System.out.println("\n\n\n ------------------- PONTOS POR JOGADOR --------------------");
 					try { System.out.println(srv.totalPontosJogador(1)); }
 					catch(Exception e) {System.out.println(e);}
 					},
 				() -> {
+					System.out.println("\n\n\n ------------------- TOTAL JOGOS JOGADOR --------------------");
 					try { System.out.println(srv.totalJogosJogador(1)); }
 					catch(Exception e) {System.out.println(e);}
 				},
 				() -> {
-					try { System.out.println(srv.PontosJogosPorJogador("U5qi4ZyKRX")); }
+					System.out.println("\n\n\n ------------------- PONTOS JOGOS POR JOGADOR --------------------");
+					try { System.out.println(srv.PontosJogosPorJogador("Valorant")); }
 					catch (Exception e){ System.out.println(e);}
 				},
 				() -> {
-					try { srv.associarCracha(2, "xqhfGVolbO", "Master");}
+					System.out.println("\n\n\n ------------------- ASSOCIAR CRACHA --------------------");
+					try { srv.associarCracha(2, "Genshin Impact", "Master");}
 					catch (Exception e){ System.out.println(e); }
 				},
 				() -> {
+					System.out.println("\n\n\n ------------------- INICIAR CONVERSA --------------------");
 					try { srv.iniciarConversa(1, "newConvo");}
 					catch (Exception e){ System.out.println(e); }
 				},
 				() -> {
+					System.out.println("\n\n\n ------------------- JUNTAR CONVERSA --------------------");
 					try { srv.juntarConversa(2, 2);}
 					catch (Exception e){ System.out.println(e); }
 				},
 				() -> {
+					System.out.println("\n\n\n ------------------- ENVIAR MENSAGEM --------------------");
 					try { srv.enviarMensagem(2, 1, "Hello");}
 					catch (Exception e){ System.out.println(e); }
 				},
 				() -> {
+					System.out.println("\n\n\n ------------------- JOGADOR TOTAL INFO --------------------");
 					try { srv.jogadorTotalInfo(); }
 					catch (Exception e) { System.out.println(e); }
 				},
 				() -> {
-					try { srv.associarCrachaModel(1, "rDo65hoDwl", "Pro player");}
+					System.out.println("\n\n\n ------------------- ASSOCIAR CRACHA MODEL --------------------");
+					try { srv.associarCrachaModel(1, "Valorant", "Pro player");}
 					catch (Exception e){ System.out.println(e); }
 				},
 		  };

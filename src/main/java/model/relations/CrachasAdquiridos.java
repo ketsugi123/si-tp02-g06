@@ -18,14 +18,14 @@ public class CrachasAdquiridos implements Serializable {
     // N:N realtion CrachasAdquiridos
     @ManyToOne
     @MapsId
-    @JoinColumn(name="crachasAdquiridos_jogador_id",  referencedColumnName = "jogador")
+    @JoinColumn(name="jogador",  referencedColumnName = "id")
     private Jogador jogador;
 
 
     @ManyToOne
     @JoinColumns({
-            @JoinColumn(name = "crachasAdquiridos_cracha_nome", referencedColumnName = "nome"),
-            @JoinColumn(name = "crachasAdquiridos_cracha_jogador", referencedColumnName = "jogador")
+            @JoinColumn(name = "nome", referencedColumnName = "nome"),
+            @JoinColumn(name = "jogador", referencedColumnName = "id", insertable = false, updatable = false)
     })
     private Cracha cracha;
 
