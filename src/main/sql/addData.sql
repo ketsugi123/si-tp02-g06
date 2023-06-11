@@ -42,8 +42,8 @@ begin
     INSERT INTO partida_multijogador(partida, jogo, jogador, pontuacao)
     VALUES
         (4, Jogo1, 1, 200),
-        (4, Jogo1, 3, 100);
-        (5, Jogo2, 2, 100)
+        (4, Jogo1, 3, 100),
+        (5, Jogo2, 2, 100);
 
     INSERT INTO cracha(nome, jogo, limite, url)
     VALUES

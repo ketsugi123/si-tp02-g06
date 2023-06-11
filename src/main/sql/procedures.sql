@@ -6,7 +6,7 @@ $$
 declare pontos bigint;
 		limitePontos int;
 begin
-	ROLLBACK
+	ROLLBACK;
 	SET TRANSACTION ISOLATION LEVEL REPEATABLE READ;
 	begin
    --verificar se o id do jogo no parametro corresponde com o jogo do cracha

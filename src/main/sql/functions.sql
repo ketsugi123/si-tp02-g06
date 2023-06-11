@@ -7,9 +7,9 @@ begin
 		raise EXCEPTION 'Jogador nao existe';
 	end if;
 	return query select (
-		(select COALESCE(sum(pontuaçao), 0) from partida_normal
+		(select COALESCE(sum(pontuacao), 0) from partida_normal
 		where jogador = idJogador) +
-		(select COALESCE(sum(pontuaçao), 0) from partida_multijogador
+		(select COALESCE(sum(pontuacao), 0) from partida_multijogador
 		where jogador = idJogador)
 	) as totalPontos;
 end;
@@ -43,10 +43,10 @@ begin
 		raise EXCEPTION 'Jogo nao existe';
 	end if;
 	return query (select partidas.jogador as jogadores, sum(total) as pontuacaoTotal from (
-			select jogador, coalesce(sum(pontuaçao), 0) as total from partida_normal 
+			select jogador, coalesce(sum(pontuacao), 0) as total from partida_normal
 			where partida in (select id from partida where jogo = idJogo )
 			group by jogador
-			union select jogador, coalesce(sum(pontuaçao), 0) as total from partida_multijogador
+			union select jogador, coalesce(sum(pontuacao), 0) as total from partida_multijogador
 			where partida in (select id from partida where jogo = idJogo )
 			group by jogador) as partidas
 		group by jogador);
