@@ -59,7 +59,7 @@ public class BLService
     }
 
     public String setPlayerState(String playerName, String newState) {
-        int idJogador = modelManager.getPlayerByEmail(playerName, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(playerName).getId();
         String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
                 .setParameter(1, idJogador)
@@ -69,7 +69,7 @@ public class BLService
 
     // Exercise 2e
     public Long totalPontosJogador(String email) {
-        int idJogador = modelManager.getPlayerByEmail(email, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(email).getId();
         String query = "SELECT totalPontos from totalPontosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
@@ -78,7 +78,7 @@ public class BLService
 
     // Exercise 2f
     public Long totalJogosJogador(String email) {
-        int idJogador = modelManager.getPlayerByEmail(email, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(email).getId();
         String query = "SELECT totalJogos from totalJogosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
@@ -88,7 +88,7 @@ public class BLService
     // Exercise 2g (Temporary implementation, not optimized)
 
     public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
-        String idJogo = modelManager.getGameByName(gameName, em).getId();
+        String idJogo = modelManager.getGameByName(gameName).getId();
         String queryString = "SELECT jogadores, pontuacaoTotal from PontosJogosPorJogador(?1)";
         Query query = em.createNativeQuery(queryString);
         query.setParameter(1, idJogo);
@@ -107,7 +107,7 @@ public class BLService
     public void associarCracha(int idJogador, String gameName, String nomeCracha) {
         EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
-        String idJogo = modelManager.getGameByName(gameName, em).getNome();
+        String idJogo = modelManager.getGameByName(gameName).getNome();
         try {
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
@@ -194,7 +194,7 @@ public class BLService
 
 
     public void associarCrachaModel(int idJogador, String gameName, String nomeCracha){
-        String idJogo = modelManager.getGameByName(gameName, em).getId();
+        String idJogo = modelManager.getGameByName(gameName).getId();
         TypedQuery<String> crachaExistsQuery =
                 em.createQuery(
                         "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",

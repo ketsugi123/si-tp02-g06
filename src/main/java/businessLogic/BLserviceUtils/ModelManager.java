@@ -21,14 +21,13 @@ public class ModelManager {
 
     private final EntityManager em;
 
-
-    public Jogo getGameByName(String gameName, EntityManager em) {
+    public Jogo getGameByName(String gameName) {
         TypedQuery<Jogo> query = em.createQuery("SELECT j FROM Jogo j WHERE j.nome = ?1", Jogo.class);
         query.setParameter(1, gameName);
         return query.getSingleResult();
     }
 
-    public Jogador getPlayerByEmail(String email, EntityManager em) {
+    public Jogador getPlayerByEmail(String email) {
         TypedQuery<Jogador> query = em.createQuery("SELECT j FROM Jogador j WHERE j.email = ?1", Jogador.class);
         query.setParameter(1, email);
         return query.getSingleResult();
