@@ -33,7 +33,7 @@ public class ConcurrencyErrorTest {
         CrachaId crachaId = new CrachaId();
         crachaId.setNome("TestCracha");
         crachaId.setJogo(jogo.getId());
-        Cracha crachaIfExists = em.find(Cracha.class, crachaId);
+        Cracha crachaIfExists = em.find(Cracha.class, crachaId, LockModeType.OPTIMISTIC);
         em.remove(crachaIfExists);
         em.getTransaction().commit();
         // Create a TestCracha

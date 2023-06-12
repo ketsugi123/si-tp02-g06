@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS cracha(
     jogo VARCHAR(10) REFERENCES jogo(id) ON DELETE CASCADE, 
     limite INTEGER NOT NULL,
     url VARCHAR(500) NOT NULL,
+    version INTEGER,
     PRIMARY KEY (nome, jogo)
 );
 
