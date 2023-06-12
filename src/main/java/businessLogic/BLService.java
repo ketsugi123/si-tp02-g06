@@ -22,6 +22,7 @@ import java.util.Map;
 
 
 import businessLogic.BLserviceUtils.ModelManager;
+import businessLogic.BLserviceUtils.TransactionManager;
 import jakarta.persistence.*;
 import model.embeddables.CrachasAdquiridosId;
 import model.relations.CrachasAdquiridos;
@@ -39,6 +40,7 @@ public class BLService
     EntityManager em = emf.createEntityManager();
 
     private final ModelManager modelManager = new ModelManager(em);
+    private final TransactionManager transactionManager = new TransactionManager(em);
 
     /**
      * 1. (a)
@@ -103,11 +105,11 @@ public class BLService
 
     // Exercise 2h
     public void associarCracha(int idJogador, String gameName, String nomeCracha) {
-        EntityTransaction transaction = modelManager.startTransaction();
+        EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         String idJogo = modelManager.getGameByName(gameName, em).getNome();
         try {
-            modelManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
                 storedProcedure.setInt(1, idJogador);
                 storedProcedure.setString(2, idJogo);
@@ -122,11 +124,11 @@ public class BLService
 
     // Exercise 2i
     public Integer iniciarConversa(int idJogador, String nomeConversa) {
-        EntityTransaction transaction = modelManager.startTransaction();
+        EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         Integer idConversa = null;
         try {
-            modelManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call iniciarConversa(?,?, ?)")) {
                 storedProcedure.setInt(1, idJogador);
                 storedProcedure.setString(2, nomeConversa);
@@ -144,7 +146,7 @@ public class BLService
 
     // Exercise 2j
     public void juntarConversa(int idJogador, int idConversa) {
-        EntityTransaction transaction = modelManager.startTransaction();
+        EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
             try (CallableStatement storedProcedure = cn.prepareCall("call juntarConversa(?,?)")) {
@@ -160,10 +162,10 @@ public class BLService
     // Exercise 2k
     public void enviarMensagem(int idJogador, int idConversa, String content) {
 
-        EntityTransaction transaction = modelManager.startTransaction();
+        EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
-            modelManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call enviarMensagem(?,?, ?)")) {
                 cn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
                 storedProcedure.setInt(1, idJogador);
@@ -179,8 +181,8 @@ public class BLService
 
     public void jogadorTotalInfo(){
         String query = "Select * from jogadorTotalInfo";
-        Query q = em.createNativeQuery(query, JogadorTotalInfo.class);
-        List<JogadorTotalInfo> allInfo =  q.getResultList();
+        Query getAllInfo = em.createNativeQuery(query, JogadorTotalInfo.class);
+        List<JogadorTotalInfo> allInfo =  getAllInfo.getResultList();
         for(JogadorTotalInfo jogador: allInfo){
             System.out.println(
                     jogador.getEstado() + " " +
@@ -201,6 +203,7 @@ public class BLService
                         "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",
                         String.class
                 );
+
         crachaExistsQuery.setParameter("idJogo", idJogo);
         crachaExistsQuery.setParameter("nomeCracha", nomeCracha);
         String foundIdJogo = crachaExistsQuery.getSingleResult();
@@ -213,23 +216,11 @@ public class BLService
             getLimitPoints.setParameter("nomeCracha", nomeCracha);
             Integer limit = getLimitPoints.getSingleResult();
 
-            TypedQuery<Integer> getPlayerId = em.createQuery(
-                    "select c.jogador.id from Compra c "  +
-                    "where c.jogador.id = :idJogador and c.jogo.id = :idJogo",
-                    Integer.class
-            );
-            getPlayerId.setParameter("idJogador", idJogador);
-            getPlayerId.setParameter("idJogo", idJogo);
-            if(idJogador == getPlayerId.getSingleResult()){
-                String jogadoresQuery = "SELECT pontuacaoTotal from PontosJogosPorJogador(?1) WHERE jogadores = ?2";
-                Query pontuacaoQuery = em.createNativeQuery(jogadoresQuery);
-                pontuacaoQuery.setParameter(1, idJogo);
-                pontuacaoQuery.setParameter(2, idJogador);
-                BigDecimal totalPoints = (BigDecimal) pontuacaoQuery.getSingleResult();
+            if(modelManager.ownsGame(idJogador, idJogo)){
+                BigDecimal totalPoints = modelManager.getPlayerPoints(idJogo, idJogador);
                 if(limit <= totalPoints.intValue() ){
-                    Query q = em.createQuery("SELECT ca.id.jogo from CrachasAdquiridos ca WHERE ca.id.jogador = ?1");
-                    q.setParameter(1, idJogador);
-                    if(q.getResultList().isEmpty()){
+                   
+                    if(!modelManager.ownsBadge(idJogador)){
                         CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
                         CrachasAdquiridosId crachasAdquiridosId = modelManager.setCrachaAdquiridoId(idJogo, nomeCracha, idJogador);
                         crachaAdquirido.setId(crachasAdquiridosId);
@@ -240,9 +231,7 @@ public class BLService
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
 
-                        em.getTransaction().begin();
-                        em.persist(crachaAdquirido);
-                        em.getTransaction().commit();
+                       
                     }
 
                 }
@@ -253,17 +242,17 @@ public class BLService
     }
 
     private void aumentarPontosCracha20(String nomeCracha, String idJogo, LockModeType lockType) {
-        EntityTransaction transaction = modelManager.startTransaction();
+        EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
-            modelManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
             String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
             TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
             selectTypedQuery.setParameter(1, nomeCracha);
             selectTypedQuery.setParameter(2, idJogo);
             selectTypedQuery.setLockMode(lockType);
             Cracha cracha = selectTypedQuery.getSingleResult();
-            modelManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
                     "UPDATE crachá c SET c.limit = c.limit * 1.2, c.version = c.version + 1 " +
                             "WHERE c.id = :crachaId AND c.version = :crachaVersion";
