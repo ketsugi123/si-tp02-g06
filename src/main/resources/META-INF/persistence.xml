@@ -13,6 +13,7 @@
             <property name="eclipselink.logging.level.connection" value="FINEST" />
             <property name="eclipselink.logging.level.transaction" value="FINEST" />
             <property name="eclipselink.logging.level.query" value="FINEST" />
+            <property name="javax.persistence.lock.scope" value="EXTENDED" />
         </properties>
     </persistence-unit>
 </persistence>

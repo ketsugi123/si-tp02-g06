@@ -91,13 +91,12 @@ public class ConcurrencyErrorTest {
         Cracha cracha = selectTypedQuery.getSingleResult();
 
         // Check if the limit and version values have been updated
-        if (cracha.getLimite() > 100 && cracha.getVersion() > 1) {
+        if (cracha.getLimite() > 100 && cracha.getVersion() > 0) {
             transaction.begin();
             em.createQuery("UPDATE Cracha c SET c.limite = c.limite / 1.2 WHERE c.id.nome = :nomeCracha")
                     .setParameter("nomeCracha", "TestCracha")
                     .setParameter("idJogo", idJogo)
                     .executeUpdate();
-            cracha.setVersion(cracha.getVersion() - 1);
             transaction.commit();
         }
     }
