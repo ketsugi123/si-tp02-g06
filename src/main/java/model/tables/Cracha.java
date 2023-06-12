@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import model.embeddables.CrachaId;
 import model.relations.CrachasAdquiridos;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,17 +13,13 @@ import java.util.List;
 @Entity
 public class Cracha implements Serializable {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
-
-    public static long getSerialVersionUID() {
-        return serialVersionUID;
-    }
+    @Version
+    private static long version = 1L;
 
     @EmbeddedId
     private CrachaId id;
 
-    int limite;
+    private int limite;
 
     String url;
 
@@ -75,6 +70,14 @@ public class Cracha implements Serializable {
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public static Long getVersion() {
+        return version;
+    }
+
+    public void setVersion(Long version) {
+        Cracha.version = version;
     }
 
 }
