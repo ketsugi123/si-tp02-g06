@@ -104,14 +104,15 @@ obteve no total das suas partidas em vários jogos.
     linenos
 ]
 {Java}
-public Long totalPontosJogador(int idJogador) {
-    String query = "SELECT totalPontos from totalPontosJogador(?1)";
+public Long totalJogosJogador(String email) {
+    int idJogador = getPlayerByEmail(email).getId();
+    String query = "SELECT totalJogos from totalJogosJogador(?1)";
     Query functionQuery = em.createNativeQuery(query);
     functionQuery.setParameter(1, idJogador);
     return (Long) functionQuery.getSingleResult();
 }
 \end{minted}
-\captionof{listing}{Código da função totalPontosJogador\label{lst:totalPontosJogador}}
+\captionof{listing}{Código da função totalJogosJogador\label{lst:totalJogosJogador}}
 
 \paragraph{Exercício 2g} Esta função é mais complexa que as outras devido ao facto de retornar uma tabela e não apenas um valor ou o resultado de uma operação e não
 há entidade para este resultado. Para resolver o problema é possível seguir várias opções: usar a função \texttt{getResultList} e colocar numa lista de arrays de objetos
@@ -147,6 +148,172 @@ public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
 % Secção 3.1.2
 %
 \subsection{Procedimentos armazenados}\label{sec312}
+
+Esta secção cobre a chamada aos procedimentos armazenados da base de dados. Estes requerem um tratamento diferente pois podem ter níveis de transação específicos.
+
+\paragraph{Exercício 2h} Este procedimento da base de dados permite associar um crachá a um jogador dados o identificador do jogador, o identificador do jogo e o
+nome do crachá. Esta transação necessita de um nível de isolamento \texttt{TRANSACTION\_REPEATABLE\_READ}, tal como se identifica na linha 6 da listagem~\ref{lst:associarCracha}.
+No final da transação é necessário fazer \texttt{transaction.commit()}, tal como na linha 12. Caso falhe, irá fazer \texttt{transaction.rollback()}, presente na linha 15.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public void associarCracha(int idJogador, String gameName, String nomeCracha) {
+    EntityTransaction transaction = startTransaction();
+    Connection cn = em.unwrap(Connection.class);
+    String idJogo = getGameByName(gameName).getNome();
+    try {
+        setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+        try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
+            storedProcedure.setInt(1, idJogador);
+            storedProcedure.setString(2, idJogo);
+            storedProcedure.setString(3, nomeCracha);
+            storedProcedure.executeUpdate();
+            transaction.commit();
+        }
+    } catch(Exception e){
+        if(transaction.isActive()) transaction.rollback();
+    }
+}
+\end{minted}
+\captionof{listing}{Código da função associarCracha\label{lst:associarCracha}}
+
+\paragraph{Exercício 2i} Assim como no exercício 2h, este procedimento armazenado necessita de um nível de isolamento \texttt{TRANSACTION\_REPEATABLE\_READ}. Este procedimento
+cria uma nova conversa e coloca o jogador que a iniciou dentro dela. Este procedimento coloca o identificador da conversa no seu terceiro argumento, o qual é criado na linha 4
+da listagem~\ref{lst:iniciarConversa}. Este valor é depois retornado. Caso a transação falhe, retorna explicitamente \texttt{null}, pois não se garante que \texttt{idConversa}
+permaneça com o valor \texttt{null} em caso de falha e consequente \texttt{rollback}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public Integer iniciarConversa(int idJogador, String nomeConversa) {
+    EntityTransaction transaction = modelManager.startTransaction();
+    Connection cn = em.unwrap(Connection.class);
+    Integer idConversa = null;
+    try {
+        modelManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+        try (CallableStatement storedProcedure = cn.prepareCall("call iniciarConversa(?,?, ?)")) {
+            storedProcedure.setInt(1, idJogador);
+            storedProcedure.setString(2, nomeConversa);
+            storedProcedure.registerOutParameter(3, Types.INTEGER);
+            storedProcedure.executeUpdate();
+            idConversa = storedProcedure.getInt(3);
+            transaction.commit();
+        }
+    } catch(Exception e){
+        if(transaction.isActive()) transaction.rollback();
+        return null;
+    }
+    return idConversa;
+}
+\end{minted}
+\captionof{listing}{Código da função iniciarConversa\label{lst:iniciarConversa}}
+
+\paragraph{Exercício 2j} Este procedimento é dos mais simples, sendo que apenas necessita de um nível de isolamento \texttt{TRANSACTION\_READ\_COMMITTED}. Com o identificador
+de um jogador e o identificador de uma conversa, colocará esse par na tabela \texttt{jogador\_conversa}, a qual indica que jogadores pertencem a cada conversa.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public void juntarConversa(int idJogador, int idConversa) {
+    EntityTransaction transaction = startTransaction();
+    Connection cn = em.unwrap(Connection.class);
+    try {
+        try (CallableStatement storedProcedure = cn.prepareCall("call juntarConversa(?,?)")) {
+            storedProcedure.setInt(1, idJogador);
+            storedProcedure.setInt(2, idConversa);
+            transaction.commit();
+        }
+    } catch(Exception e){
+        if(transaction.isActive()) transaction.rollback();
+    }
+}
+\end{minted}
+\captionof{listing}{Código da função juntarConversa\label{lst:juntarConversa}}
+
+\paragraph{Exercício 2k} Neste exercício o procedimento é, tal como em 2j, mais simples e requer apenas um nível de isolamento \texttt{TRANSACTION\_READ\_COMMITTED}. Usando
+o identificador de um jogador, o qual envia a mensagem, o identificador da conversa para onde a mensagem é enviada e o conteúdo da mensagem em questão. Esta função apenas
+cria uma transação e realiza \texttt{commit} em caso de sucesso e \texttt{rollback} em caso de falha.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public void enviarMensagem(int idJogador, int idConversa, String content) {
+    EntityTransaction transaction = modelManager.startTransaction();
+    Connection cn = em.unwrap(Connection.class);
+    try {
+        modelManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+        try (CallableStatement storedProcedure = cn.prepareCall("call enviarMensagem(?,?, ?)")) {
+            cn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+            storedProcedure.setInt(1, idJogador);
+            storedProcedure.setInt(2, idConversa);
+            storedProcedure.setString(3, content);
+            storedProcedure.executeUpdate();
+            transaction.commit();
+        }
+    } catch(Exception e){
+        if(transaction.isActive()) transaction.rollback();
+    }
+}
+\end{minted}
+\captionof{listing}{Código da função enviarMensagem\label{lst:enviarMensagem}}
+
+%
+% Secção 3.1.3
+%
+\subsection{Vistas} \label{sec313}
+
+Esta última subsecção representa a implementação da vista presente na base de dados.
+
+\paragraph{Exercício 2l} Esta vista permite obter a informação de todos os jogadores com exceção dos que têm o estado \texttt{'banido'}. Para obter os valores desta tabela optou-se
+por criar uma entidade que representa estes resultados, pois uma vista funciona tal como uma tabela e, devido a esta característica, é efetuada uma \textit{query} normal. Após obter
+os resultados esta função coloca-os no \textit{standard output}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public void jogadorTotalInfo(){
+    String query = "Select * from jogadorTotalInfo";
+    Query q = em.createNativeQuery(query, JogadorTotalInfo.class);
+    List<JogadorTotalInfo> allInfo =  q.getResultList();
+    for(JogadorTotalInfo jogador: allInfo){
+        System.out.println(
+                jogador.getEstado() + " " +
+                jogador.getEmail() + " " +
+                jogador.getUsername() + " " +
+                jogador.getJogosParticipados() + " " +
+                jogador.getPartidasParticipadas() + " " +
+                jogador.getPontuacaoTotal() + " "
+        );
+    }
+}
+\end{minted}
+\captionof{listing}{Código da função jogadorTotalInfo\label{lst:jogadorTotalInfo}}
 
 %
 % Secção 3.2
