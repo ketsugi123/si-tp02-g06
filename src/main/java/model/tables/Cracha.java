@@ -14,7 +14,7 @@ import java.util.List;
 public class Cracha implements Serializable {
 
     @Version
-    private static long version = 1L;
+    private int version = 1;
 
     @EmbeddedId
     private CrachaId id;
@@ -72,12 +72,12 @@ public class Cracha implements Serializable {
         this.url = url;
     }
 
-    public static Long getVersion() {
+    public int getVersion() {
         return version;
     }
 
-    public void setVersion(Long version) {
-        Cracha.version = version;
+    public void setVersion(int version) {
+        this.version = version;
     }
 
 }

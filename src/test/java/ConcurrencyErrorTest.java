@@ -3,7 +3,6 @@ import businessLogic.BLserviceUtils.ModelManager;
 import jakarta.persistence.*;
 import model.embeddables.CrachaId;
 import model.tables.Cracha;
-import model.tables.Jogador;
 import model.tables.Jogo;
 
 public class ConcurrencyErrorTest {
@@ -11,8 +10,6 @@ public class ConcurrencyErrorTest {
     private final EntityManagerFactory emf;
     private final EntityManager em;
     private final EntityTransaction transaction;
-    private final ModelManager modelManager;
-
     private final Jogo jogo;
 
 
@@ -20,7 +17,7 @@ public class ConcurrencyErrorTest {
         emf = Persistence.createEntityManagerFactory("JPAex");
         em = emf.createEntityManager();
         transaction = em.getTransaction();
-        modelManager = new ModelManager(em);
+        ModelManager modelManager = new ModelManager(em);
         jogo = modelManager.getGameByName("Valorant");
     }
 
@@ -31,32 +28,23 @@ public class ConcurrencyErrorTest {
     }
 
     public void setupTestData() {
-        // Create a Cracha entity with initial values
-
-        // Assuming you have the EntityManager instance named 'em'
-
+        // Check if the TestCracha already exists
         em.getTransaction().begin();
-
         CrachaId crachaId = new CrachaId();
         crachaId.setNome("TestCracha");
         crachaId.setJogo(jogo.getId());
         Cracha crachaIfExists = em.find(Cracha.class, crachaId);
-
         em.remove(crachaIfExists);
-
         em.getTransaction().commit();
-
+        // Create a TestCracha
         EntityTransaction transaction = em.getTransaction();
-
         transaction.begin();
         Cracha cracha = new Cracha();
-
         cracha.setId(crachaId);
         cracha.setLimite(100); // Initial limit value
-        cracha.setVersion(1L); // Initial version value
+        cracha.setVersion(1); // Initial version value
         cracha.setUrl("testCracha.com");
         cracha.setJogo(jogo);
-
         em.persist(cracha);
         transaction.commit();
     }
@@ -118,6 +106,6 @@ public class ConcurrencyErrorTest {
         Cracha cracha = selectTypedQuery.getSingleResult();
 
         // Check if the limit and version values have been updated
-        return cracha.getLimite() > 100 && Cracha.getVersion() > 1L;
+        return cracha.getLimite() > 100 && cracha.getVersion() > 1;
     }
 }

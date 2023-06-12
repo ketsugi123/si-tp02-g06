@@ -253,7 +253,7 @@ public class BLService
                             "WHERE c.id = :crachaId AND c.version = :crachaVersion";
             Query updateQuery = em.createQuery(query);
             updateQuery.setParameter("crachaId", cracha.getId());
-            updateQuery.setParameter("crachaVersion", Cracha.getVersion());
+            updateQuery.setParameter("crachaVersion", cracha.getVersion());
             int updatedCount = updateQuery.executeUpdate();
             if (updatedCount == 0) {
                 switch (lockType) {
