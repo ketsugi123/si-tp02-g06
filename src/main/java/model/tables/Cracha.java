@@ -14,7 +14,7 @@ import java.util.List;
 public class Cracha implements Serializable {
 
     @Version
-    private int version = 1;
+    private int version;
 
     @EmbeddedId
     private CrachaId id;
