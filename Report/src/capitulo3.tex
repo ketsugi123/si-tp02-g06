@@ -374,7 +374,7 @@ Integer limit = getLimitPoints.getSingleResult();
 \captionof{listing}{Excerto da função associarCrachaModel para determinar o limite de pontos do crachá\label{lst:getLimitPoints}}
 
 Após saber o limite do crachá, é preciso garantir que o jogador cumpre este limite, começando por verificar se este sequer comprou o jogo em questão. A classe \texttt{ModelManager}
-contém o método \texttt{ownsgGame}, o qual recebe como parâmetros o identificador de um jogador e o identificador de um jogo e retorna um valor booleano.
+contém o método \texttt{ownsGame}, o qual recebe como parâmetros o identificador de um jogador e o identificador de um jogo e retorna um valor booleano.
 \begin{minted}
 [
     frame=lines,
@@ -390,6 +390,8 @@ BigDecimal totalPoints = modelManager.getPlayerPoints(idJogo, idJogador);
 
 A próxima verificação determina se este jogador cumpre o limite, calculando o total de pontos nesse jogo com o método do \texttt{ModelManager}, \texttt{getPlayerPoints}, com o jogador como
 parâmetro.
+
+Para evitar erros, verifica-se ainda se o jogador já tem o crachá em questão, através da função \texttt{ModelManager}, \texttt{ownsBadge}, a qual determina se um jogador já tem o crachá em questão.
 
 Finalmente, após todas as verificações necessárias, é criada uma nova entrada na tabela \texttt{CrachasAdquiridos}, através do modelo. Este código encontra-se na listagem~\ref{lst:crachaAdquirido}.
 \begin{minted}
@@ -418,25 +420,104 @@ crachaAdquirido.setJogador(jogador);
 %
 \section{Funcionalidade Adicional} \label{sec33}
 
-TODO(Aumentar a 20\% cena)
+A segunda fase do trabalho prático vem acompanhada de uma funcionalidade adicional, a qual consiste em aumentar a quantidade de pontos necessários para obter um crachá por 20\%. Esta
+vem no formate de uma função do modelo de negócio e começa por criar uma transação e colocá-la com nível de isolamento a \texttt{TRANSACTION\_REPEATABLE\_READ}. Este nível +e necessário
+para obter o cracha pretendido. O código desta query e transação encontra-se na listagem~\ref{lst:obterCracha}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+EntityTransaction transaction = transactionManager.startTransaction();
+Connection cn = em.unwrap(Connection.class);
+try {
+    transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+    String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
+    TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
+    selectTypedQuery.setParameter(1, nomeCracha);
+    selectTypedQuery.setParameter(2, idJogo);
+    selectTypedQuery.setLockMode(lockType);
+    Cracha cracha = selectTypedQuery.getSingleResult();
+\end{minted}
+\captionof{listing}{Excerto da função aumentarPontosCracha20 para obter o crachá\label{lst:obterCracha}}
 
-%
-% Secção 3.3.1
-%
-\subsection{Implementação Com \textit{Optimistic Locking}} \label{sec331}
+Nota-se também que na linha 9 da listagem~\ref{lst:obterCracha} encontra-se a chamada à função \texttt{setLockMode}. Aqui encontra-se a diferença entre \textit{locking} otimista e
+pessimista.
 
-TODO(Descrever a implementação que usa optimistic locking)
+O objetivo da próxima \textit{query} da transação é alterar o valor do limite de pontos do crachá encontrado na porção anterior. A listagem~\ref{lst:alterarCracha} representa
+esta \textit{query}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+String query =
+        "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
+cracha.setVersion(cracha.getVersion() + 1);
+Query updateQuery = em.createQuery(query);
+if (lockType == LockModeType.PESSIMISTIC_READ) {
+    updateQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+} else {
+    updateQuery.setLockMode(lockType);
+}
+updateQuery.setParameter("crachaId", cracha.getId());
+updateQuery.setParameter("crachaVersion", cracha.getVersion());
+int updatedCount = updateQuery.executeUpdate();
+\end{minted}
+\captionof{listing}{Excerto da função aumentarPontosCracha20 - alterar o valor do limite do crachá\label{lst:alterarCracha}}
 
-%
-% Secção 3.3.2
-%
-\subsection{Implementação Com \textit{Pessimistic Locking}} \label{sec332}
+Na listagem~\ref{lst:alterarCracha} também se altera o tipo de lock para esta \textit{query} com base no parâmetro do método \texttt{aumentarPontosCracha20}.
 
-TODO(Descrever a implementação que usa pessimistic locking)
+Após a execução da \textit{query} verifica-se se a quantidade de linhas alteradas é 0. Neste caso verifica-se qual o tipo de lock e lança-se uma exceção correspondente, tal como se
+verifica na listagem~\ref{lst:updatedCount}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+if (updatedCount == 0) {
+    switch (lockType) {
+        case OPTIMISTIC -> throw new OptimisticLockException("Concurrent update detected for Cracha");
+        case PESSIMISTIC_READ -> throw new PessimisticLockException("Concurrent update detected for Cracha");
+        default -> throw new Exception("Concurrent update detected for Cracha");
+    }
+}
+\end{minted}
+\captionof{listing}{Excerto da função aumentarPontosCracha20 - verificar o sucesso da transação\label{lst:updatedCount}}
+
+No final, em caso de sucesso, a função simplesmente faz \texttt{commit}. Já em caso de falha, irá realizar \texttt{rollback}.
+
+Devido à forma como esta função foi implementada, executar com \textit{optimistic locking} basta a função \texttt{aumentarPontosOptimistic}, a qual passa como parâmetro
+\texttt{LockModeType.OPTIMISTIC}. Para obter a versão com \textit{pessimistic locking} basta chamar a outra função, \texttt{aumentarPontosPessimistic}, que passa como
+parâmetro \texttt{LockModeType.PESSIMISTIC\_READ}.
 
 %
 % Secção 3.3.3
 %
 \subsection{Testes da Funcionalidade}\label{sec333}
 
-TODO(Descrever os testes e como se testou concorrência)
+Para verificar o bom funcionamento desta nova funcionalidade, é necessário criar testes para a versão que faz uso de \textit{optimistic locking}. Esta é
+vulnerável a erros de concorrência por não efetuar \textit{lock} às tabelas afetadas antes de executar.
+
+%
+% Secção 3.4
+%
+\section{Aplicação}\label{sec34}
+
+Para testar o bom funcionamento de cada função foi criada a classe \texttt{App}, a qual corre todas as funções e apresenta os resultados no \textit{standard output}. Contém uma interface
+funcional \texttt{ITest} a qual apenas corre uma função sem retorno nem argumentos, assim é possível selecionar o teste pretendido.
+
+O código desta aplicação encontra-se no anexo~\ref{a6}.

@@ -60,7 +60,7 @@ public class BLService
     }
 
     public String setPlayerState(String playerName, String newState) {
-        int idJogador = modelManager.getPlayerByEmail(playerName, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(playerName).getId();
         String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
                 .setParameter(1, idJogador)
@@ -70,7 +70,7 @@ public class BLService
 
     // Exercise 2e
     public Long totalPontosJogador(String email) {
-        int idJogador = modelManager.getPlayerByEmail(email, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(email).getId();
         String query = "SELECT totalPontos from totalPontosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
@@ -79,7 +79,7 @@ public class BLService
 
     // Exercise 2f
     public Long totalJogosJogador(String email) {
-        int idJogador = modelManager.getPlayerByEmail(email, em).getId();
+        int idJogador = modelManager.getPlayerByEmail(email).getId();
         String query = "SELECT totalJogos from totalJogosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
@@ -89,7 +89,7 @@ public class BLService
     // Exercise 2g (Temporary implementation, not optimized)
 
     public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
-        String idJogo = modelManager.getGameByName(gameName, em).getId();
+        String idJogo = modelManager.getGameByName(gameName).getId();
         String queryString = "SELECT jogadores, pontuacaoTotal from PontosJogosPorJogador(?1)";
         Query query = em.createNativeQuery(queryString);
         query.setParameter(1, idJogo);
@@ -108,7 +108,7 @@ public class BLService
     public void associarCracha(int idJogador, String gameName, String nomeCracha) {
         EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
-        String idJogo = modelManager.getGameByName(gameName, em).getNome();
+        String idJogo = modelManager.getGameByName(gameName).getNome();
         try {
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
@@ -181,10 +181,7 @@ public class BLService
     }
 
     public void jogadorTotalInfo(){
-        String query = "Select * from jogadorTotalInfo";
-        Query getAllInfo = em.createNativeQuery(query, JogadorTotalInfo.class);
-        List<JogadorTotalInfo> allInfo =  getAllInfo.getResultList();
-        for(JogadorTotalInfo jogador: allInfo){
+        for(JogadorTotalInfo jogador: modelManager.getPlayertotalInfo()){
             System.out.println(
                     jogador.getEstado() + " " +
                     jogador.getEmail() + " " +
@@ -198,7 +195,7 @@ public class BLService
 
 
     public void associarCrachaModel(int idJogador, String gameName, String nomeCracha){
-        String idJogo = modelManager.getGameByName(gameName, em).getId();
+        String idJogo = modelManager.getGameByName(gameName).getId();
         TypedQuery<String> crachaExistsQuery =
                 em.createQuery(
                         "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",
@@ -221,7 +218,7 @@ public class BLService
                 BigDecimal totalPoints = modelManager.getPlayerPoints(idJogo, idJogador);
                 if(limit <= totalPoints.intValue() ){
                    
-                    if(!modelManager.ownsBadge(idJogador)){
+                    if(!modelManager.ownsBadge(idJogador, idJogo)){
                         CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
                         CrachasAdquiridosId crachasAdquiridosId = modelManager.setCrachaAdquiridoId(idJogo, nomeCracha, idJogador);
                         crachaAdquirido.setId(crachasAdquiridosId);
@@ -231,8 +228,6 @@ public class BLService
 
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
-
-                       
                     }
 
                 }
@@ -255,11 +250,16 @@ public class BLService
             Cracha cracha = selectTypedQuery.getSingleResult();
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
-                    "UPDATE crachá c SET c.limit = c.limit * 1.2, c.version = c.version + 1 " +
-                            "WHERE c.id = :crachaId AND c.version = :crachaVersion";
-            Query updateQuery = em.createNativeQuery(query);
+                    "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
+            cracha.setVersion(cracha.getVersion() + 1);
+            Query updateQuery = em.createQuery(query);
+            if (lockType == LockModeType.PESSIMISTIC_READ) {
+                updateQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+            } else {
+                updateQuery.setLockMode(lockType);
+            }
             updateQuery.setParameter("crachaId", cracha.getId());
-            updateQuery.setParameter("crachaVersion", Cracha.getSerialVersionUID());
+            updateQuery.setParameter("crachaVersion", cracha.getVersion());
             int updatedCount = updateQuery.executeUpdate();
             if (updatedCount == 0) {
                 switch (lockType) {
@@ -284,10 +284,10 @@ public class BLService
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
     }
 
-    // Exercise 2 (b) -> Inside Test Folder
+    // Exercise 2 (b) -> Inside test/java/ConcurrencyErrorTest.java
 
     // Exercise 2 (c)
-    public void aumentarPontosPessimistic(String nomeCracha, String idJogo, LockModeType lockType) {
+    public void aumentarPontosPessimistic(String nomeCracha, String idJogo) {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
     }
 }

@@ -1,14 +1,14 @@
 
-O presente conjunto de ficheiros constitui uma referência para a elaboração dos relatórios de progresso, 
-beta e final no âmbito de Projecto e Seminário da LEIC.
+O presente conjunto de ficheiros constitui uma referÃªncia para a elaboraÃ§Ã£o dos relatÃ³rios de progresso, 
+beta e final no Ã¢mbito de Projecto e SeminÃ¡rio da LEIC.
 
-Este ficheiro foi elaborado usando a distribuição MIKTEX 2.9,
+Este ficheiro foi elaborado usando a distribuiÃ§Ã£o MIKTEX 2.9,
 http://en.wikipedia.org/wiki/MiKTeX
 http://miktex.org/2.9/setup
 usando o editor TeXnicCenter
 http://www.texniccenter.org/
 
-Existem vários outros editores que podem ser usados, tais como por exemplo:
+Existem vÃ¡rios outros editores que podem ser usados, tais como por exemplo:
 
 	TeXstudio,  http://texstudio.sourceforge.net/
 	TeXworks,   https://www.tug.org/texworks/
