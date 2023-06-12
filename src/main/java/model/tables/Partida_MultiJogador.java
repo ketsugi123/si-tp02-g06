@@ -22,8 +22,8 @@ public class Partida_MultiJogador implements Serializable {
 
     @OneToOne
     @JoinColumns({
-            @JoinColumn(name = "partidaM_partida", referencedColumnName = "partida", insertable = false, updatable = false),
-            @JoinColumn(name = "partidaM_jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
     })
     private Partida partida;
 
