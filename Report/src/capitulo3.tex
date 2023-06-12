@@ -14,6 +14,10 @@ Esta aplicação também permite aumentar em 20\% o número de pontos associados
 locking}. A versão que utiliza \textit{optimistic locking} vem acompanhada de testes que verificam que uma mensagem de erro é levantada quando existe uma alteração
 concorrente que inviabilize a operação.
 
+\paragraph{Business Logic} O \textit{package} \texttt{businessLogic}, cujo código das suas classes está presente no anexo~\ref{a4}, contém todas as funções representadas
+neste capítulo. Dentro deste \textit{package} encontra-se também \texttt{BLServiceUtils}, presente no anexo~\ref{a5}, o qual contém funções úteis para a classe
+\texttt{BLService}.
+
 %
 % Secção 3.1
 %
@@ -62,7 +66,8 @@ public String createPlayer(String username, String email, String regiao) {
     linenos
 ]
 {Java}
-public String setPlayerState(int idJogador, String newState) {
+public String setPlayerState(String playerName, String newState) {
+    int idJogador = modelManager.getPlayerByEmail(playerName, em).getId();
     String query = "SELECT setPlayerState(?1, ?2)";
     Query functionQuery = em.createNativeQuery(query)
             .setParameter(1, idJogador)
@@ -84,7 +89,8 @@ base de dados. A implementação encontra-se na listagem~\ref{lst:totalPontosJog
     linenos
 ]
 {Java}
-public Long totalPontosJogador(int idJogador) {
+public Long totalPontosJogador(String email) {
+    int idJogador = modelManager.getPlayerByEmail(email, em).getId();
     String query = "SELECT totalPontos from totalPontosJogador(?1)";
     Query functionQuery = em.createNativeQuery(query);
     functionQuery.setParameter(1, idJogador);
@@ -105,7 +111,7 @@ obteve no total das suas partidas em vários jogos.
 ]
 {Java}
 public Long totalJogosJogador(String email) {
-    int idJogador = getPlayerByEmail(email).getId();
+    int idJogador = modelManager.getPlayerByEmail(email, em).getId();
     String query = "SELECT totalJogos from totalJogosJogador(?1)";
     Query functionQuery = em.createNativeQuery(query);
     functionQuery.setParameter(1, idJogador);
@@ -128,7 +134,7 @@ entidade apenas para os resultados desta função. A solução escolhida foi a p
 ]
 {Java}
 public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
-    String idJogo = getGameByName(gameName).getId();
+    String idJogo = modelManager.getGameByName(gameName, em).getId();
     String queryString = "SELECT jogadores, pontuacaoTotal from PontosJogosPorJogador(?1)";
     Query query = em.createNativeQuery(queryString);
     query.setParameter(1, idJogo);
@@ -164,11 +170,11 @@ No final da transação é necessário fazer \texttt{transaction.commit()}, tal 
 ]
 {Java}
 public void associarCracha(int idJogador, String gameName, String nomeCracha) {
-    EntityTransaction transaction = startTransaction();
+    EntityTransaction transaction = transactionManager.startTransaction();
     Connection cn = em.unwrap(Connection.class);
-    String idJogo = getGameByName(gameName).getNome();
+    String idJogo = modelManager.getGameByName(gameName, em).getNome();
     try {
-        setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+        transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
         try (CallableStatement storedProcedure = cn.prepareCall("call associarCracha(?,?, ?)")) {
             storedProcedure.setInt(1, idJogador);
             storedProcedure.setString(2, idJogo);
@@ -197,11 +203,11 @@ permaneça com o valor \texttt{null} em caso de falha e consequente \texttt{roll
 ]
 {Java}
 public Integer iniciarConversa(int idJogador, String nomeConversa) {
-    EntityTransaction transaction = modelManager.startTransaction();
+    EntityTransaction transaction = transactionManager.startTransaction();
     Connection cn = em.unwrap(Connection.class);
     Integer idConversa = null;
     try {
-        modelManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
+        transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
         try (CallableStatement storedProcedure = cn.prepareCall("call iniciarConversa(?,?, ?)")) {
             storedProcedure.setInt(1, idJogador);
             storedProcedure.setString(2, nomeConversa);
@@ -231,7 +237,7 @@ de um jogador e o identificador de uma conversa, colocará esse par na tabela \t
 ]
 {Java}
 public void juntarConversa(int idJogador, int idConversa) {
-    EntityTransaction transaction = startTransaction();
+    EntityTransaction transaction = transactionManager.startTransaction();
     Connection cn = em.unwrap(Connection.class);
     try {
         try (CallableStatement storedProcedure = cn.prepareCall("call juntarConversa(?,?)")) {
@@ -259,10 +265,10 @@ cria uma transação e realiza \texttt{commit} em caso de sucesso e \texttt{roll
 ]
 {Java}
 public void enviarMensagem(int idJogador, int idConversa, String content) {
-    EntityTransaction transaction = modelManager.startTransaction();
+    EntityTransaction transaction = transactionManager.startTransaction();
     Connection cn = em.unwrap(Connection.class);
     try {
-        modelManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+        transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
         try (CallableStatement storedProcedure = cn.prepareCall("call enviarMensagem(?,?, ?)")) {
             cn.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
             storedProcedure.setInt(1, idJogador);
@@ -299,8 +305,8 @@ os resultados esta função coloca-os no \textit{standard output}.
 {Java}
 public void jogadorTotalInfo(){
     String query = "Select * from jogadorTotalInfo";
-    Query q = em.createNativeQuery(query, JogadorTotalInfo.class);
-    List<JogadorTotalInfo> allInfo =  q.getResultList();
+    Query getAllInfo = em.createNativeQuery(query, JogadorTotalInfo.class);
+    List<JogadorTotalInfo> allInfo =  getAllInfo.getResultList();
     for(JogadorTotalInfo jogador: allInfo){
         System.out.println(
                 jogador.getEstado() + " " +
@@ -320,21 +326,92 @@ public void jogadorTotalInfo(){
 %
 \section{Realização da Funcionalidade 2h} \label{sec32}
 
-TODO(Descrever a funcionalidade)
+Originalmente este procedimento armazenado é chamado diretamente. No entanto implementou-se a função \texttt{associarCrachaModel}, a qual, com os mesmos parâmetros que a função
+\texttt{associarCracha}, efetua o mesmo procedimento mas fazendo uso de ferramentas da aplicação ao invés de usar funções pgSql.
 
-%
-% Secção 3.2.1
-%
-\subsection{Sem usar procedimentos e funções pgSql} \label{sec321}
+Esta função começa por criar uma \texttt{TypedQuery}, na qual pretende determinar se o cracha pretendido existe, presnete na listagem~\ref{lst:crachaExistsQuery}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+String idJogo = modelManager.getGameByName(gameName, em).getId();
+TypedQuery<String> crachaExistsQuery =
+        em.createQuery(
+                "select c.id.jogo from Cracha c where c.id.jogo = :idJogo and c.id.nome = :nomeCracha",
+                String.class
+        );
 
-TODO(Descrever a implementação sem pgSql)
+crachaExistsQuery.setParameter("idJogo", idJogo);
+crachaExistsQuery.setParameter("nomeCracha", nomeCracha);
+String foundIdJogo = crachaExistsQuery.getSingleResult();
+\end{minted}
+\captionof{listing}{Excerto da função associarCrachaModel para determinar se o cracha existe\label{lst:crachaExistsQuery}}
 
-%
-% Secção 3.2.2
-%
-\subsection{Usando procedimentos e funções pgSql} \label{sec322}
+O excerto da listagem~\ref{lst:crachaExistsQuery} obtém um id de um jogo, o qual necessita de ser igual ao dado como parâmetro. Uma vez sabendo esta informação, é agora possível
+efetuar a \textit{query} \texttt{getLimitPoints}, a qual permite saber qual o limite de pontos necessários para que um jogador obtenha esse crachá. O excerto da
+listagem~\ref{lst:getLimitPoints} contém o código necessário para obter esta informação.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+TypedQuery<Integer> getLimitPoints = em.createQuery(
+        "select c.limite from Cracha c where c.id.nome = :nomeCracha",
+        Integer.class
+);
+getLimitPoints.setParameter("nomeCracha", nomeCracha);
+Integer limit = getLimitPoints.getSingleResult();
+\end{minted}
+\captionof{listing}{Excerto da função associarCrachaModel para determinar o limite de pontos do crachá\label{lst:getLimitPoints}}
 
-TODO(Descrever a implementação com pgSql)
+Após saber o limite do crachá, é preciso garantir que o jogador cumpre este limite, começando por verificar se este sequer comprou o jogo em questão. A classe \texttt{ModelManager}
+contém o método \texttt{ownsgGame}, o qual recebe como parâmetros o identificador de um jogador e o identificador de um jogo e retorna um valor booleano.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+BigDecimal totalPoints = modelManager.getPlayerPoints(idJogo, idJogador);
+\end{minted}
+\captionof{listing}{Excerto da função associarCrachaModel para determinar se o jogador cumpre o limite de pontos\label{lst:totalPoints}}
+
+A próxima verificação determina se este jogador cumpre o limite, calculando o total de pontos nesse jogo com o método do \texttt{ModelManager}, \texttt{getPlayerPoints}, com o jogador como
+parâmetro.
+
+Finalmente, após todas as verificações necessárias, é criada uma nova entrada na tabela \texttt{CrachasAdquiridos}, através do modelo. Este código encontra-se na listagem~\ref{lst:crachaAdquirido}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
+CrachasAdquiridosId crachasAdquiridosId = modelManager.setCrachaAdquiridoId(idJogo, nomeCracha, idJogador);
+crachaAdquirido.setId(crachasAdquiridosId);
+
+Cracha cracha = em.find(Cracha.class, modelManager.setCrachaId(idJogo, nomeCracha));
+crachaAdquirido.setCracha(cracha);
+
+Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
+crachaAdquirido.setJogador(jogador);
+\end{minted}
+\captionof{listing}{Excerto da função associarCrachaModel que cria a nova entrada em CrachasAdquiridos\label{lst:crachaAdquirido}}
 
 %
 % Secção 3.3

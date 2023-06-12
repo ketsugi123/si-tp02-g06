@@ -2,7 +2,6 @@
 % Anexo 2
 %
 \chapter{Código das Classes do \textit{Package} \texttt{model.tables}} \label{a3}
-Neste anexo encontra-se o código do ficheiro deleteSchema.sql
 \begin{minted}
 [
     frame=lines,
@@ -75,3 +74,619 @@ public class Jogo implements Serializable {
 }
 \end{minted}
 \captionof{listing}{Código da classe Jogo\label{lst:Jogo}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.relations.Compra;
+import model.relations.CrachasAdquiridos;
+import model.relations.Participa;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name="jogador")
+public class Jogador implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Jogador(){ }
+
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String email;
+    private String username;
+    private String estado;
+    private String regiao;
+    @OneToMany(mappedBy = "jogador")
+    private List<Compra> compras = new ArrayList<>();
+    public void addCompra(Compra compra){ this.compras.add(compra); }
+    public List<Compra> getCompras() { return compras; }
+
+
+    //N:N Crachas
+
+    @OneToMany(mappedBy = "jogador")
+    private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
+
+    public List<CrachasAdquiridos> getCrachasList() {
+        return crachasAdquiridosList;
+    }
+
+    public void adquirirCracha(CrachasAdquiridos crachasAdquiridos) {
+        this.crachasAdquiridosList.add(crachasAdquiridos);
+    }
+
+
+    //N:N Participa Relation
+    @OneToMany(mappedBy = "jogador")
+    private List<Participa> participaList = new ArrayList<>();
+    public List<Participa> getParticipaList() { return this.participaList; }
+    public void addParticipacao(Participa participa){this.participaList.add(participa);}
+
+    @OneToMany(mappedBy = "jogador", cascade = CascadeType.PERSIST)
+    private List<Partida_Normal> partidasNormais = new ArrayList<>();
+
+    public List<Partida_Normal> getPartidasNormais() {
+        return partidasNormais;
+    }
+
+    public void addPartida_Normal(Partida_Normal partida_normal){
+        this.partidasNormais.add(partida_normal);
+    }
+
+    @OneToMany(mappedBy = "jogador", cascade = CascadeType.PERSIST)
+    private List<Partida_MultiJogador> partidasMultiJogador = new ArrayList<>();
+
+    public void addPartidaMultiJogador(Partida_MultiJogador partida){
+        this.partidasMultiJogador.add(partida);
+    }
+    public List<Partida_MultiJogador> getPartidasMultiJogador() {
+        return partidasMultiJogador;
+    }
+
+
+
+    //getter and setters
+    public int getId(){
+        return this.id;
+    }
+
+    public String getEmail(){
+        return this.email;
+    }
+
+    public void setEmail(String email){
+        this.email = email;
+    }
+
+    public String getUsername(){
+        return this.username;
+    }
+
+    public void setUsername(String username){
+        this.username = username;
+    }
+
+    public String getEstado(){
+        return this.estado;
+    }
+
+    public void setEstado(String estado){
+        this.estado = estado;
+    }
+
+    public String getRegiao(){
+        return this.regiao;
+    }
+
+    public void setRegiao(String regiao){
+        this.regiao = regiao;
+    }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe Jogador\label{lst:Jogador}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.embeddables.PartidaId;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.Date;
+
+@Entity
+@Table(name="partida")
+public class Partida implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Partida() { }
+
+    @EmbeddedId
+    private PartidaId id;
+
+    String estado;
+    String nome_regiao;
+
+    Date dtinicio;
+
+    Date dtfim;
+
+    // 1:N
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "id")
+    private Jogo jogo;
+
+    public void setJogo(Jogo jogo) {
+        this.jogo = jogo;
+    }
+
+    public Jogo getJogo() {
+        return jogo;
+    }
+
+    public PartidaId getId() {
+        return id;
+    }
+
+    @OneToOne(mappedBy = "partida")
+    private Partida_MultiJogador partida_multiJogador;
+
+    public Partida_MultiJogador getPartida_multiJogador() {
+        return partida_multiJogador;
+    }
+
+    public void setPartida_multiJogador(Partida_MultiJogador partida_multiJogador) {
+        this.partida_multiJogador = partida_multiJogador;
+    }
+
+    @OneToOne(mappedBy = "partida")
+    private Partida_Normal partida_normal;
+
+    public Partida_Normal getPartida_normal() {
+        return partida_normal;
+    }
+
+    public void setPartida_normal(Partida_Normal partida_normal) {
+        this.partida_normal = partida_normal;
+    }
+
+    public void setId(PartidaId id) {
+        this.id = id;
+    }
+
+    public String getEstado() {
+        return estado;
+    }
+
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    public String getNome_regiao() {
+        return nome_regiao;
+    }
+
+    public void setNome_regiao(String nome_regiao) {
+        this.nome_regiao = nome_regiao;
+    }
+
+    public Date getDtinicio() {
+        return dtinicio;
+    }
+
+    public void setDtinicio(Date dtinicio) {
+        this.dtinicio = dtinicio;
+    }
+
+    public void setDtfim(Date dtfim) {
+        this.dtfim = dtfim;
+    }
+
+    public Date getDtfim() {
+        return dtfim;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe Partida\label{lst:Partida}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.embeddables.PartidaMId;
+import model.embeddables.PartidaNId;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+@Entity
+@Table(name="partida_multijogador")
+public class Partida_MultiJogador implements Serializable {
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Partida_MultiJogador() { }
+
+    @EmbeddedId
+    private PartidaMId partida_multiId;
+
+    int pontuacao;
+
+    @OneToOne
+    @JoinColumns({
+            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+    })
+    private Partida partida;
+
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+    private Jogador jogador;
+
+    public Jogador getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(Jogador jogador) {
+        this.jogador = jogador;
+    }
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    public void setPontuacao(int pontuacao) {
+        this.pontuacao = pontuacao;
+    }
+
+    public void setPartida_multiId(PartidaMId partida) {
+        this.partida_multiId = partida;
+    }
+
+    public PartidaMId getPartida_multiId() {
+        return partida_multiId;
+    }
+
+    public int getPontuacao() {
+        return pontuacao;
+    }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe Partida\_MultiJogador\label{lst:Partida_MultiJogador}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.embeddables.PartidaNId;
+
+import java.io.Serial;
+import java.io.Serializable;
+
+@Entity
+@Table(name="partida_normal")
+public class Partida_Normal extends Partida implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Partida_Normal() { }
+
+    @EmbeddedId
+    private PartidaNId partida_normalId;
+
+    private int pontuacao;
+
+    @OneToOne
+    @JoinColumns({
+            @JoinColumn(name = "partida", referencedColumnName = "partida", insertable = false, updatable = false),
+            @JoinColumn(name = "jogo", referencedColumnName = "jogo", insertable = false, updatable = false)
+    })
+    private Partida partida;
+
+    public Partida getPartida() {
+        return partida;
+    }
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name = "jogador", referencedColumnName = "jogador")
+    private Jogador jogador;
+
+    public Jogador getJogador() {
+        return jogador;
+    }
+
+    public void setJogador(Jogador jogador) {
+        this.jogador = jogador;
+    }
+
+    public PartidaNId getPartida_normalId() {
+        return partida_normalId;
+    }
+
+    public void setPartida_normalId(PartidaNId partida) {
+        this.partida_normalId = partida;
+    }
+
+    public int getPontuacao() {
+        return pontuacao;
+    }
+
+    public void setPontuacao(int pontuacao) {
+        this.pontuacao = pontuacao;
+    }
+
+
+}
+\end{minted}
+\captionof{listing}{Código da classe Partida\_Normal\label{lst:Partida_Normal}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+
+import jakarta.persistence.*;
+import model.embeddables.CrachaId;
+import model.relations.CrachasAdquiridos;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Table(name="cracha")
+@Entity
+public class Cracha implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public static long getSerialVersionUID() {
+        return serialVersionUID;
+    }
+
+    @EmbeddedId
+    private CrachaId id;
+
+    int limite;
+
+    String url;
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name="jogo")
+    private Jogo jogo;
+
+    public Jogo getJogo() {
+        return jogo;
+    }
+
+    public void setJogo(Jogo jogo) {
+        this.jogo = jogo;
+    }
+
+    @OneToMany(mappedBy = "cracha")
+    private List<CrachasAdquiridos> crachasAdquiridosList = new ArrayList<>();
+
+    public List<CrachasAdquiridos> getCrachasList() {
+        return crachasAdquiridosList;
+    }
+
+    public void addCrachas(CrachasAdquiridos crachasAdquiridos) {
+        this.crachasAdquiridosList.add(crachasAdquiridos);
+    }
+
+
+    public CrachaId getId() {
+        return this.id;
+    }
+
+    public void setId(CrachaId id) {
+        this.id = id;
+    }
+
+    public int getLimite() {
+        return limite;
+    }
+
+    public void setLimite(int limit) {
+        this.limite = limit;
+    }
+
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+}
+\end{minted}
+\captionof{listing}{Código da classe Cracha\label{lst:Cracha}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.relations.Participa;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name="conversa")
+public class Conversa implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    public Conversa() { }
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String nome;
+
+    // N:N relation participa
+    @OneToMany(mappedBy = "conversa")
+    private List<Participa> participantes = new ArrayList<>();
+
+    public List<Participa> getParticipantes(){ return this.participantes; }
+
+    public void addJogador(Participa participante){
+        this.participantes.add(participante);
+    }
+
+    // 1:N relation contem
+    @OneToMany(mappedBy = "conversa", cascade = CascadeType.PERSIST, orphanRemoval = true)
+    private List<Mensagem> mensagens = new ArrayList<>();
+
+    public List<Mensagem> getMensagens() {
+        return mensagens;
+    }
+
+    public void addMensagem(Mensagem mensagem) {
+        this.mensagens.add(mensagem);
+    }
+
+    //getter and setters
+    public int getId() { return id; }
+    public void setNome(String nome){ this.nome = nome; }
+    public String getNome(){ return this.nome; }
+}
+\end{minted}
+\captionof{listing}{Código da classe Conversa\label{lst:Conversa}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+package model.tables;
+
+import jakarta.persistence.*;
+import model.embeddables.MensagemId;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.sql.Date;
+
+@Entity
+@Table(name = "mensagem")
+public class Mensagem implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
+    public Mensagem() { }
+
+    @EmbeddedId
+    private MensagemId mensagemId;
+
+    String conteudo;
+
+    Date data;
+
+
+    @ManyToOne
+    @MapsId
+    @JoinColumn(name="conversa")
+    private Conversa conversa;
+
+    public MensagemId getMensagemId() {
+        return mensagemId;
+    }
+
+    public void setMensagemId(MensagemId mensagemId) {
+        this.mensagemId = mensagemId;
+    }
+
+    public Date getData() {
+        return data;
+    }
+
+    public void setData(Date data) {
+        this.data = data;
+    }
+
+    public String getConteudo() {
+        return conteudo;
+    }
+
+    public void setConteudo(String conteudo) {
+        this.conteudo = conteudo;
+    }
+}
+\end{minted}
+\captionof{listing}{Código da classe Mensagem\label{lst:Mensagem}}
