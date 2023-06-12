@@ -250,7 +250,6 @@ public class BLService
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
                     "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
-            cracha.setVersion(cracha.getVersion() + 1);
             Query updateQuery = em.createQuery(query);
             if (lockType == LockModeType.PESSIMISTIC_READ) {
                 updateQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
