@@ -5,6 +5,8 @@ import model.embeddables.CrachaId;
 import model.tables.Cracha;
 import model.tables.Jogo;
 
+import java.util.ArrayList;
+
 public class ConcurrencyErrorTest {
     private final BLService blService = new BLService();
     private final EntityManagerFactory emf;
@@ -34,15 +36,14 @@ public class ConcurrencyErrorTest {
         crachaId.setNome("TestCracha");
         crachaId.setJogo(jogo.getId());
         Cracha crachaIfExists = em.find(Cracha.class, crachaId, LockModeType.OPTIMISTIC);
-        em.remove(crachaIfExists);
+        if(crachaIfExists != null ) em.remove(crachaIfExists);
         em.getTransaction().commit();
         // Create a TestCracha
         EntityTransaction transaction = em.getTransaction();
         transaction.begin();
         Cracha cracha = new Cracha();
         cracha.setId(crachaId);
-        cracha.setLimite(100); // Initial limit value
-        cracha.setVersion(1); // Initial version value
+        cracha.setLimite(100); // Initial limit value// Initial version value
         cracha.setUrl("testCracha.com");
         cracha.setJogo(jogo);
         em.persist(cracha);
@@ -53,51 +54,35 @@ public class ConcurrencyErrorTest {
         ConcurrencyErrorTest test = new ConcurrencyErrorTest();
         Jogo jogo = test.jogo;
         test.setupTestData();
+        Integer nThreads = 8;
+        ArrayList<Thread> ths = new ArrayList<>();
 
-        Thread thread1 = new Thread(
-                () -> test.executeConcurrentUpdate(jogo.getId())
-        );
+        for(int i = 0; i < nThreads; i++){
+            ths.add(new Thread(
+                    () -> {
+                        try {
+                            test.executeConcurrentUpdate(jogo.getId());
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+            ));
+        }
 
-        Thread thread2 = new Thread(() -> {
-            try {
-                Thread.sleep(2000); // Introduce a delay before executing the update
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            }
-            test.executeConcurrentUpdate(jogo.getId());
-        });
+        for(int i = 0; i < nThreads; i++){
+            ths.get(i).start();
+        }
 
-        thread1.start();
-        thread2.start();
-        thread1.join();
-        thread2.join();
+        for(int i = 0; i < nThreads; i++){
+            ths.get(i).join();
+        }
 
-        test.tryRollbackUpdateChanges(jogo.getId());
 
         test.close();
     }
 
-    public void executeConcurrentUpdate(String idJogo) {
+    public void executeConcurrentUpdate(String idJogo) throws Exception {
         String nomeCracha = "TestCracha";
         blService.aumentarPontosOptimistic(nomeCracha, idJogo);
-    }
-
-    private void tryRollbackUpdateChanges(String idJogo) {
-        String nomeCracha = "TestCracha";
-        String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = :nomeCracha AND c.id.jogo = :idJogo";
-        TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
-        selectTypedQuery.setParameter("nomeCracha", nomeCracha);
-        selectTypedQuery.setParameter("idJogo", idJogo);
-        Cracha cracha = selectTypedQuery.getSingleResult();
-
-        // Check if the limit and version values have been updated
-        if (cracha.getLimite() > 100 && cracha.getVersion() > 0) {
-            transaction.begin();
-            em.createQuery("UPDATE Cracha c SET c.limite = c.limite / 1.2 WHERE c.id.nome = :nomeCracha")
-                    .setParameter("nomeCracha", "TestCracha")
-                    .setParameter("idJogo", idJogo)
-                    .executeUpdate();
-            transaction.commit();
-        }
     }
 }

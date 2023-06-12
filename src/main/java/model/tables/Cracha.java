@@ -13,7 +13,7 @@ import java.util.List;
 
 @Table(name="cracha")
 @Entity
-@OptimisticLocking(type = OptimisticLockingType.ALL_COLUMNS)
+@OptimisticLocking(type = OptimisticLockingType.VERSION_COLUMN)
 public class Cracha implements Serializable {
 
     @Version
@@ -79,8 +79,5 @@ public class Cracha implements Serializable {
         return version;
     }
 
-    public void setVersion(int version) {
-        this.version = version;
-    }
 
 }

@@ -236,40 +236,27 @@ public class BLService
         }
     }
 
-    private void aumentarPontosCracha20(String nomeCracha, String idJogo, LockModeType lockType) {
+    private void aumentarPontosCracha20(String nomeCracha, String idJogo, LockModeType lockType) throws Exception {
         EntityTransaction transaction = transactionManager.startTransaction();
         Connection cn = em.unwrap(Connection.class);
         try {
-            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_READ_COMMITTED, transaction);
+            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
             TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
             selectTypedQuery.setParameter(1, nomeCracha);
             selectTypedQuery.setParameter(2, idJogo);
             selectTypedQuery.setLockMode(lockType);
             Cracha cracha = selectTypedQuery.getSingleResult();
-            transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
                     "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
             Query updateQuery = em.createQuery(query);
-            if (lockType == LockModeType.PESSIMISTIC_READ) {
-                updateQuery.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-            } else {
-                updateQuery.setLockMode(lockType);
-            }
             updateQuery.setParameter("crachaId", cracha.getId());
-            updateQuery.setParameter("crachaVersion", cracha.getVersion());
-            int updatedCount = updateQuery.executeUpdate();
-            if (updatedCount == 0) {
-                switch (lockType) {
-                    case OPTIMISTIC -> throw new OptimisticLockException("Concurrent update detected for Cracha");
-                    case PESSIMISTIC_READ -> throw new PessimisticLockException("Concurrent update detected for Cracha");
-                    default -> throw new Exception("Concurrent update detected for Cracha");
-                }
-            }
+            updateQuery.executeUpdate();
             transaction.commit();
-        } catch (Exception e) {
+        }
+        catch (Exception e){
             if (transaction.isActive()) transaction.rollback();
-            System.out.println("Error Message: " + e.getMessage());
+            throw e;
         }
     }
 
@@ -278,14 +265,14 @@ public class BLService
      */
 
     // Exercise 2 (a)
-    public void aumentarPontosOptimistic(String nomeCracha, String idJogo) {
+    public void aumentarPontosOptimistic(String nomeCracha, String idJogo) throws Exception {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
     }
 
     // Exercise 2 (b) -> Inside test/java/ConcurrencyErrorTest.java
 
     // Exercise 2 (c)
-    public void aumentarPontosPessimistic(String nomeCracha, String idJogo) {
+    public void aumentarPontosPessimistic(String nomeCracha, String idJogo) throws Exception {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
     }
 }
