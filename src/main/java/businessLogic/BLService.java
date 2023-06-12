@@ -217,7 +217,7 @@ public class BLService
                 BigDecimal totalPoints = modelManager.getPlayerPoints(idJogo, idJogador);
                 if(limit <= totalPoints.intValue() ){
                    
-                    if(!modelManager.ownsBadge(idJogador)){
+                    if(!modelManager.ownsBadge(idJogador, idJogo)){
                         CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
                         CrachasAdquiridosId crachasAdquiridosId = modelManager.setCrachaAdquiridoId(idJogo, nomeCracha, idJogador);
                         crachaAdquirido.setId(crachasAdquiridosId);

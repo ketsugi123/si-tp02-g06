@@ -73,9 +73,10 @@ public class ModelManager {
         return getCompra.getResultList().isEmpty();
     }
 
-    public Boolean ownsBadge(int idJogador) {
-        Query hasCracha = em.createQuery("SELECT ca.id.jogo from CrachasAdquiridos ca WHERE ca.id.jogador = ?1");
+    public Boolean ownsBadge(int idJogador, String idJogo) {
+        Query hasCracha = em.createQuery("SELECT ca.id.jogo from CrachasAdquiridos ca WHERE ca.id.jogador = ?1 and ca.id.jogo = ?1");
         hasCracha.setParameter(1, idJogador);
+        hasCracha.setParameter(2, idJogo);
         return !hasCracha.getResultList().isEmpty();
     }
 }
