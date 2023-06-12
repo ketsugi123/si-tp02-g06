@@ -180,10 +180,7 @@ public class BLService
     }
 
     public void jogadorTotalInfo(){
-        String query = "Select * from jogadorTotalInfo";
-        Query getAllInfo = em.createNativeQuery(query, JogadorTotalInfo.class);
-        List<JogadorTotalInfo> allInfo =  getAllInfo.getResultList();
-        for(JogadorTotalInfo jogador: allInfo){
+        for(JogadorTotalInfo jogador: modelManager.getPlayertotalInfo()){
             System.out.println(
                     jogador.getEstado() + " " +
                     jogador.getEmail() + " " +
@@ -230,8 +227,6 @@ public class BLService
 
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
-
-                       
                     }
 
                 }
@@ -254,11 +249,11 @@ public class BLService
             Cracha cracha = selectTypedQuery.getSingleResult();
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
-                    "UPDATE crachá c SET c.limit = c.limit * 1.2, c.version = c.version + 1 " +
+                    "UPDATE Cracha c SET c.limite = c.limite * 1.2, c.version = c.version + 1 " +
                             "WHERE c.id = :crachaId AND c.version = :crachaVersion";
-            Query updateQuery = em.createNativeQuery(query);
+            Query updateQuery = em.createQuery(query);
             updateQuery.setParameter("crachaId", cracha.getId());
-            updateQuery.setParameter("crachaVersion", Cracha.getSerialVersionUID());
+            updateQuery.setParameter("crachaVersion", Cracha.getVersion());
             int updatedCount = updateQuery.executeUpdate();
             if (updatedCount == 0) {
                 switch (lockType) {
