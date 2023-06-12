@@ -19,7 +19,72 @@ concorrente que inviabilize a operação.
 %
 \section{Acesso às Funcionalidades da Base de Dados} \label{sec31}
 
-TODO(Descrever a forma como as funções são chamadas no modelo aplicacional)
+O primeiro requisito é disponibilizar as funcionalidades presentes na base de dados, començando com o exercício \texttt{2d} da primeira fase até ao exercício \texttt{2l}.
+Estas são apresentadas na forma de funções da aplicação.
+
+\paragraph{Exercício 2d} Este exercício consiste em duas funções distintas, tal como na base de dados, pois estas eftuam operações diferentes. As duas funções são
+\texttt{createPlayer} e \texttt{setPlayerState}. Nas listagens~\ref{lst:createPlayer} e \ref{lst:setPlayerState} encontram-se as funções \texttt{createPlayer} e
+\texttt{setPlayerState}, respetivamente. Realça-se nestas implementações que a forma de chamar um função em PostgreSQL é como realizar uma \textit{query} para a 
+função, tal como a \textit{string} criada na primeira linha de cada função.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public String createPlayer(String username, String email, String regiao) {
+    String query = "SELECT createPlayer(?1, ?2, ?3)";
+    Query functionQuery = em.createNativeQuery(query)
+            .setParameter(1, username)
+            .setParameter(2, email)
+            .setParameter(3, regiao);
+    return (String) functionQuery.getSingleResult();
+}
+\end{minted}
+\captionof{listing}{Código da função createPlayer\label{lst:createPlayer}}
+
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public String setPlayerState(int idJogador, String newState) {
+    String query = "SELECT setPlayerState(?1, ?2)";
+    Query functionQuery = em.createNativeQuery(query)
+            .setParameter(1, idJogador)
+            .setParameter(2, newState);
+    return (String) functionQuery.getSingleResult();
+}
+\end{minted}
+\captionof{listing}{Código da função setPlayerState\label{lst:setPlayerState}}
+
+\paragraph{Exercício 2e} Este exercício apenas requer a implementação de uma função. Esta também tem apenas como objetivo chamar uma função da base de dados e não
+requer nível de isolamente acima do que está por definição em PostgreSQL. Tal como nas funções em 2d, esta apenas realiza uma \textit{query} para a função na
+base de dados. A implementação encontra-se na listagem~\ref{lst:totalPontosJogador}.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public Long totalPontosJogador(int idJogador) {
+    String query = "SELECT totalPontos from totalPontosJogador(?1)";
+    Query functionQuery = em.createNativeQuery(query);
+    functionQuery.setParameter(1, idJogador);
+    return (Long) functionQuery.getSingleResult();
+}
+\end{minted}
+\captionof{listing}{Código da função totalPontosJogador\label{lst:totalPontosJogador}}
 
 %
 % Secção 3.2
