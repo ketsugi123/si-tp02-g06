@@ -286,7 +286,7 @@ public class BLService
     // Exercise 2 (b) -> Inside Test Folder
 
     // Exercise 2 (c)
-    public void aumentarPontosPessimistic(String nomeCracha, String idJogo, LockModeType lockType) {
+    public void aumentarPontosPessimistic(String nomeCracha, String idJogo) {
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
     }
 }
