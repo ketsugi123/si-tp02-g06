@@ -49,16 +49,6 @@ public class ConcurrencyErrorTest {
         transaction.commit();
     }
 
-    private void rollbackUpdateChanges(String idJogo) {
-        transaction.begin();
-        em.createQuery("UPDATE Cracha c SET c.limite = c.limite / 1.2, c.version = c.version - 1 " +
-                        "WHERE c.id.nome = :nomeCracha AND c.id.jogo = :idJogo")
-                .setParameter("nomeCracha", "TestCracha")
-                .setParameter("idJogo", idJogo)
-                .executeUpdate();
-        transaction.commit();
-    }
-
     public static void main(String[] args) throws InterruptedException {
         ConcurrencyErrorTest test = new ConcurrencyErrorTest();
         Jogo jogo = test.jogo;
@@ -82,11 +72,7 @@ public class ConcurrencyErrorTest {
         thread1.join();
         thread2.join();
 
-
-        // Rollback the update changes
-        if (test.successfulUpdate(jogo.getId())) {
-            test.rollbackUpdateChanges(jogo.getId());
-        }
+        test.tryRollbackUpdateChanges(jogo.getId());
 
         test.close();
     }
@@ -96,9 +82,8 @@ public class ConcurrencyErrorTest {
         blService.aumentarPontosOptimistic(nomeCracha, idJogo);
     }
 
-    private boolean successfulUpdate(String idJogo) {
+    private void tryRollbackUpdateChanges(String idJogo) {
         String nomeCracha = "TestCracha";
-
         String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = :nomeCracha AND c.id.jogo = :idJogo";
         TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
         selectTypedQuery.setParameter("nomeCracha", nomeCracha);
@@ -106,6 +91,14 @@ public class ConcurrencyErrorTest {
         Cracha cracha = selectTypedQuery.getSingleResult();
 
         // Check if the limit and version values have been updated
-        return cracha.getLimite() > 100 && cracha.getVersion() > 1;
+        if (cracha.getLimite() > 100 && cracha.getVersion() > 1) {
+            transaction.begin();
+            em.createQuery("UPDATE Cracha c SET c.limite = c.limite / 1.2 WHERE c.id.nome = :nomeCracha")
+                    .setParameter("nomeCracha", "TestCracha")
+                    .setParameter("idJogo", idJogo)
+                    .executeUpdate();
+            cracha.setVersion(cracha.getVersion() - 1);
+            transaction.commit();
+        }
     }
 }

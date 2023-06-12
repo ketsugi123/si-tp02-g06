@@ -249,8 +249,8 @@ public class BLService
             Cracha cracha = selectTypedQuery.getSingleResult();
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
             String query =
-                    "UPDATE Cracha c SET c.limite = c.limite * 1.2, c.version = c.version + 1 " +
-                            "WHERE c.id = :crachaId AND c.version = :crachaVersion";
+                    "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
+            cracha.setVersion(cracha.getVersion() + 1);
             Query updateQuery = em.createQuery(query);
             updateQuery.setParameter("crachaId", cracha.getId());
             updateQuery.setParameter("crachaVersion", cracha.getVersion());
@@ -278,7 +278,7 @@ public class BLService
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
     }
 
-    // Exercise 2 (b) -> Inside Test Folder
+    // Exercise 2 (b) -> Inside test/java/ConcurrencyErrorTest.java
 
     // Exercise 2 (c)
     public void aumentarPontosPessimistic(String nomeCracha, String idJogo) {
