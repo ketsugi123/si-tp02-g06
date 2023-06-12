@@ -32,23 +32,34 @@ public class App
 
 	public static void main( String[] args ) {
 		BLService srv = new BLService();
+		Scanner imp = new Scanner(System.in);
 		ITest[] tests = new ITest[] {
 				() -> {
 					System.out.println("\n\n\n ------------------- CREATE PLAYER --------------------");
-					try { System.out.println( srv.createPlayer("player1", "player1@email.com", "EU") ); }
+					System.out.println("Introduza um username");
+					String playerName = imp.nextLine();
+					System.out.println("Introduza um email");
+					String email = imp.nextLine();
+					try { System.out.println( srv.createPlayer(playerName, email, "EU") ); }
 					catch(Exception e) { System.out.println(e); }},
 				() -> {
-					System.out.println("\n\n\n ------------------- SET PLAYER STATE --------------------");
-					try { System.out.println(srv.setPlayerState(1, "Banido")); }
+					System.out.println("\n\n\n ------------------- BAN PLAYER --------------------");
+					System.out.println("Introduza um email de um jogador que queira banir");
+					String email = imp.nextLine();
+					try { System.out.println(srv.setPlayerState(email, "Banido")); }
 					catch(Exception e) {System.out.println(e);}},
 				() -> {
 					System.out.println("\n\n\n ------------------- PONTOS POR JOGADOR --------------------");
-					try { System.out.println(srv.totalPontosJogador(1)); }
+					System.out.println("Introduza um email de um jogador que queira saber o número total de pontos");
+					String email = imp.nextLine();
+					try { System.out.println(srv.totalPontosJogador(email)); }
 					catch(Exception e) {System.out.println(e);}
 					},
 				() -> {
 					System.out.println("\n\n\n ------------------- TOTAL JOGOS JOGADOR --------------------");
-					try { System.out.println(srv.totalJogosJogador(1)); }
+					System.out.println("Introduza um email de um jogador que queira saber o número total de jogos");
+					String email = imp.nextLine();
+					try { System.out.println(srv.totalJogosJogador(email)); }
 					catch(Exception e) {System.out.println(e);}
 				},
 				() -> {
@@ -89,9 +100,9 @@ public class App
 		  };
 
 		while(true){
-			Scanner imp = new Scanner(System.in);
+			Scanner opt = new Scanner(System.in);
 			System.out.printf("Choose a test (1-%d)? -1 to break ",tests.length);
-			int option = imp.nextInt();
+			int option = opt.nextInt();
 			if (option >= 1 && option <= tests.length)
 				tests[--option].test();
 			if(option == -1) break;

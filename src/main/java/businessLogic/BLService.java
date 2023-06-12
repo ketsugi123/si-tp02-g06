@@ -59,6 +59,12 @@ public class BLService
         return query.getSingleResult();
     }
 
+    private Jogador getPlayerByEmail(String email){
+        TypedQuery<Jogador> query = em.createQuery("SELECT j FROM Jogador j WHERE j.email = ?1", Jogador.class);
+        query.setParameter(1, email);
+        return query.getSingleResult();
+    }
+
     /**
      * 1. (a)
      * Access to the funcionalities 2d to 2l
@@ -75,7 +81,8 @@ public class BLService
 
     }
 
-    public String setPlayerState(int idJogador, String newState) {
+    public String setPlayerState(String playerName, String newState) {
+        int idJogador = getPlayerByEmail(playerName).getId();
         String query = "SELECT setPlayerState(?1, ?2)";
         Query functionQuery = em.createNativeQuery(query)
                 .setParameter(1, idJogador)
@@ -84,7 +91,8 @@ public class BLService
     }
 
     // Exercise 2e
-    public Long totalPontosJogador(int idJogador) {
+    public Long totalPontosJogador(String email) {
+        int idJogador = getPlayerByEmail(email).getId();
         String query = "SELECT totalPontos from totalPontosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);
@@ -92,7 +100,8 @@ public class BLService
     }
 
     // Exercise 2f
-    public Long totalJogosJogador(int idJogador) {
+    public Long totalJogosJogador(String email) {
+        int idJogador = getPlayerByEmail(email).getId();
         String query = "SELECT totalJogos from totalJogosJogador(?1)";
         Query functionQuery = em.createNativeQuery(query);
         functionQuery.setParameter(1, idJogador);

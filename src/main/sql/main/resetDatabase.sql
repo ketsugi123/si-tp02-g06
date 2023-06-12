@@ -28,7 +28,7 @@ $$ LANGUAGE plpgsql;
 
 CREATE TABLE IF NOT EXISTS jogador(
     id SERIAL PRIMARY KEY,
-    email VARCHAR(80) NOT NULL,
+    email VARCHAR(80) UNIQUE NOT NULL,
     username VARCHAR(20) NOT NULL,
     estado VARCHAR(7) NOT NULL CHECK (estado = 'Ativo' OR estado = 'Inativo' OR estado = 'Banido'),
     regiao VARCHAR(5)
