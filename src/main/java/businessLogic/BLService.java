@@ -180,10 +180,7 @@ public class BLService
     }
 
     public void jogadorTotalInfo(){
-        String query = "Select * from jogadorTotalInfo";
-        Query getAllInfo = em.createNativeQuery(query, JogadorTotalInfo.class);
-        List<JogadorTotalInfo> allInfo =  getAllInfo.getResultList();
-        for(JogadorTotalInfo jogador: allInfo){
+        for(JogadorTotalInfo jogador: modelManager.getPlayertotalInfo()){
             System.out.println(
                     jogador.getEstado() + " " +
                     jogador.getEmail() + " " +
@@ -230,8 +227,6 @@ public class BLService
 
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
-
-                       
                     }
 
                 }
