@@ -18,14 +18,12 @@ import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 
 import jakarta.persistence.*;
+import model.embeddables.CrachaId;
 import model.embeddables.CrachasAdquiridosId;
 import model.relations.CrachasAdquiridos;
 import model.tables.Cracha;
@@ -65,6 +63,21 @@ public class BLService
         TypedQuery<Jogador> query = em.createQuery("SELECT j FROM Jogador j WHERE j.email = ?1", Jogador.class);
         query.setParameter(1, email);
         return query.getSingleResult();
+    }
+
+    private CrachasAdquiridosId setCid(String idJogo, String nomeCracha, int idJogador){
+        CrachasAdquiridosId crachasAdquiridosId = new CrachasAdquiridosId();
+        crachasAdquiridosId.setJogo(idJogo);
+        crachasAdquiridosId.setCracha(nomeCracha);
+        crachasAdquiridosId.setJogador(idJogador);
+        return  crachasAdquiridosId;
+    }
+
+    private CrachaId setCrachaId(String idJogo, String nomeCracha){
+        CrachaId crachaId = new CrachaId();
+        crachaId.setJogo(idJogo);
+        crachaId.setNome(nomeCracha);
+        return crachaId;
     }
 
     /**
@@ -256,23 +269,15 @@ public class BLService
                     Query q = em.createQuery("SELECT ca.id.jogo from CrachasAdquiridos ca WHERE ca.id.jogador = ?1");
                     q.setParameter(1, idJogador);
                     if(q.getResultList().isEmpty()){
-                        TypedQuery<Cracha> getCracha = em.createQuery("SELECT c FROM Cracha c where c.id.nome = ?1", Cracha.class);
-                        TypedQuery<Jogador> getJogador = em.createQuery("SELECT j from Jogador j WHERE j.id = ?1", Jogador.class);
                         CrachasAdquiridos crachaAdquirido = new CrachasAdquiridos();
-                        CrachasAdquiridosId cid = new CrachasAdquiridosId();
+                        CrachasAdquiridosId crachasAdquiridosId = setCid(idJogo, nomeCracha, idJogador);
+                        crachaAdquirido.setId(crachasAdquiridosId);
 
-                        cid.setJogo(idJogo);
-                        cid.setCracha(nomeCracha);
-                        cid.setJogador(idJogador);
-
-                        crachaAdquirido.setId(cid);
-
-                        getCracha.setParameter(1, nomeCracha);
-                        crachaAdquirido.setCracha(getCracha.getSingleResult());
+                        Cracha cracha = em.find(Cracha.class, setCrachaId(idJogo, nomeCracha));
+                        crachaAdquirido.setCracha(cracha);
 
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
-
 
                         em.getTransaction().begin();
                         em.persist(crachaAdquirido);
