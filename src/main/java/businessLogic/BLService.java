@@ -24,6 +24,7 @@ import java.util.Map;
 import businessLogic.BLserviceUtils.ModelManager;
 import businessLogic.BLserviceUtils.TransactionManager;
 import jakarta.persistence.*;
+import model.embeddables.CrachaId;
 import model.embeddables.CrachasAdquiridosId;
 import model.relations.CrachasAdquiridos;
 import model.tables.Cracha;
@@ -227,6 +228,9 @@ public class BLService
 
                         Jogador jogador = em.find(Jogador.class, idJogador); // Fetch the Jogador entity by ID
                         crachaAdquirido.setJogador(jogador);
+                        em.getTransaction().begin();
+                        em.persist(crachaAdquirido);
+                        em.getTransaction().commit();
                     }
 
                 }
@@ -241,16 +245,16 @@ public class BLService
         Connection cn = em.unwrap(Connection.class);
         try {
             transactionManager.setIsolationLevel(cn, Connection.TRANSACTION_REPEATABLE_READ, transaction);
-            String selectQuery = "SELECT c FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
-            TypedQuery<Cracha> selectTypedQuery = em.createQuery(selectQuery, Cracha.class);
+            String selectQuery = "SELECT c.id FROM Cracha c WHERE c.id.nome = ?1 AND c.id.jogo = ?2";
+            TypedQuery<CrachaId> selectTypedQuery = em.createQuery(selectQuery, CrachaId.class);
             selectTypedQuery.setParameter(1, nomeCracha);
             selectTypedQuery.setParameter(2, idJogo);
             selectTypedQuery.setLockMode(lockType);
-            Cracha cracha = selectTypedQuery.getSingleResult();
+            CrachaId cracha = selectTypedQuery.getSingleResult();
             String query =
                     "UPDATE Cracha c SET c.limite = c.limite * 1.2 WHERE c.id = :crachaId";
             Query updateQuery = em.createQuery(query);
-            updateQuery.setParameter("crachaId", cracha.getId());
+            updateQuery.setParameter("crachaId", cracha);
             updateQuery.executeUpdate();
             transaction.commit();
         }
@@ -265,14 +269,16 @@ public class BLService
      */
 
     // Exercise 2 (a)
-    public void aumentarPontosOptimistic(String nomeCracha, String idJogo) throws Exception {
+    public void aumentarPontosOptimistic(String nomeCracha, String gameName) throws Exception {
+        String idJogo = modelManager.getGameByName(gameName).getId();
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.OPTIMISTIC);
     }
 
     // Exercise 2 (b) -> Inside test/java/ConcurrencyErrorTest.java
 
     // Exercise 2 (c)
-    public void aumentarPontosPessimistic(String nomeCracha, String idJogo) throws Exception {
+    public void aumentarPontosPessimistic(String nomeCracha, String gameName) throws Exception {
+        String idJogo = modelManager.getGameByName(gameName).getId();
         aumentarPontosCracha20(nomeCracha, idJogo, LockModeType.PESSIMISTIC_READ);
     }
 }

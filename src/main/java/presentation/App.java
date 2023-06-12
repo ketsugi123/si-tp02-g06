@@ -40,19 +40,26 @@ public class App
 					String playerName = imp.nextLine();
 					System.out.println("Introduza um email");
 					String email = imp.nextLine();
-					try { System.out.println( srv.createPlayer(playerName, email, "EU") ); }
+					try {
+						System.out.println( srv.createPlayer(playerName, email, "EU") );
+					}
 					catch(Exception e) { System.out.println(e); }},
 				() -> {
 					System.out.println("\n\n\n ------------------- BAN PLAYER --------------------");
 					System.out.println("Introduza um email de um jogador que queira banir");
 					String email = imp.nextLine();
 					try { System.out.println(srv.setPlayerState(email, "Banido")); }
-					catch(Exception e) {System.out.println(e);}},
+					catch(Exception e) {
+						System.out.println(e);
+					}
+					},
 				() -> {
 					System.out.println("\n\n\n ------------------- PONTOS POR JOGADOR --------------------");
 					System.out.println("Introduza um email de um jogador que queira saber o número total de pontos");
 					String email = imp.nextLine();
-					try { System.out.println(srv.totalPontosJogador(email)); }
+					try {
+						System.out.println(srv.totalPontosJogador(email));
+					}
 					catch(Exception e) {System.out.println(e);}
 					},
 				() -> {
@@ -95,6 +102,11 @@ public class App
 				() -> {
 					System.out.println("\n\n\n ------------------- ASSOCIAR CRACHA MODEL --------------------");
 					try { srv.associarCrachaModel(1, "Valorant", "Pro player");}
+					catch (Exception e){ System.out.println(e); }
+				},
+				() -> {
+					System.out.println("\n\n\n ------------------- AUMENTAR 20% PESSIMISTIC --------------------");
+					try { srv.aumentarPontosPessimistic( "Pro player","Valorant");}
 					catch (Exception e){ System.out.println(e); }
 				},
 		  };

@@ -12,6 +12,7 @@ public class ConcurrencyErrorTest {
     private final EntityManagerFactory emf;
     private final EntityManager em;
     private final EntityTransaction transaction;
+
     private final Jogo jogo;
 
 
@@ -43,7 +44,7 @@ public class ConcurrencyErrorTest {
         transaction.begin();
         Cracha cracha = new Cracha();
         cracha.setId(crachaId);
-        cracha.setLimite(100); // Initial limit value// Initial version value
+        cracha.setLimite(100);
         cracha.setUrl("testCracha.com");
         cracha.setJogo(jogo);
         em.persist(cracha);
@@ -61,7 +62,7 @@ public class ConcurrencyErrorTest {
             ths.add(new Thread(
                     () -> {
                         try {
-                            test.executeConcurrentUpdate(jogo.getId());
+                            test.executeConcurrentUpdate();
                         } catch (Exception e) {
                             throw new RuntimeException(e);
                         }
@@ -81,8 +82,8 @@ public class ConcurrencyErrorTest {
         test.close();
     }
 
-    public void executeConcurrentUpdate(String idJogo) throws Exception {
+    public void executeConcurrentUpdate() throws Exception {
         String nomeCracha = "TestCracha";
-        blService.aumentarPontosOptimistic(nomeCracha, idJogo);
+        blService.aumentarPontosOptimistic(nomeCracha, "Valorant");
     }
 }
