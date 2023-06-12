@@ -21,6 +21,8 @@ import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 import jakarta.persistence.*;
@@ -109,23 +111,22 @@ public class BLService
     }
 
     // Exercise 2g (Temporary implementation, not optimized)
-    public ArrayList<Map<Integer, BigDecimal>> PontosJogosPorJogador(String gameName) {
+
+    public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
         String idJogo = getGameByName(gameName).getId();
-        String jogadoresQuery = "SELECT jogadores from PontosJogosPorJogador(?1)";
-        Query jogadoresFunctionQuery = em.createNativeQuery(jogadoresQuery);
-        jogadoresFunctionQuery.setParameter(1, idJogo);
-        String pontuacaoQuery = "SELECT pontuacaoTotal from PontosJogosPorJogador(?1)";
-        Query pontuacaoFunctionQuery = em.createNativeQuery(pontuacaoQuery);
-        pontuacaoFunctionQuery.setParameter(1, idJogo);
-        List<Integer> idList = jogadoresFunctionQuery.getResultList();
-        List<BigDecimal> pointsList = pontuacaoFunctionQuery.getResultList();
-        ArrayList<Map<Integer, BigDecimal>> resultList = new ArrayList<>();
-        int numberOfPlayers = idList.size();
-        for (int i = 0; i < numberOfPlayers; i++) {
-            resultList.add(Map.of(idList.get(i), pointsList.get(i)));
+        String queryString = "SELECT jogadores, pontuacaoTotal from PontosJogosPorJogador(?1)";
+        Query query = em.createNativeQuery(queryString);
+        query.setParameter(1, idJogo);
+        Map<Integer, BigDecimal> map = new java.util.HashMap<>(Map.of());
+        List<Object[]> list  = query.getResultList();
+        for (Object[] obj : list) {
+            Integer idJogador = (Integer) obj[0];
+            BigDecimal points = (BigDecimal) obj[1];
+            map.put(idJogador,  points);
         }
-        return resultList;
+        return map;
     }
+
 
     // Exercise 2h
     public void associarCracha(int idJogador, String gameName, String nomeCracha) {
