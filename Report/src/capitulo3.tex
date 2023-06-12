@@ -22,6 +22,13 @@ concorrente que inviabilize a operação.
 O primeiro requisito é disponibilizar as funcionalidades presentes na base de dados, començando com o exercício \texttt{2d} da primeira fase até ao exercício \texttt{2l}.
 Estas são apresentadas na forma de funções da aplicação.
 
+%
+% Secção 3.1.1
+%
+\subsection{Funções}\label{sec311}
+
+Nesta secção encontram-se as funções chamadas tal como na base de dados PostgreSQL.
+
 \paragraph{Exercício 2d} Este exercício consiste em duas funções distintas, tal como na base de dados, pois estas eftuam operações diferentes. As duas funções são
 \texttt{createPlayer} e \texttt{setPlayerState}. Nas listagens~\ref{lst:createPlayer} e \ref{lst:setPlayerState} encontram-se as funções \texttt{createPlayer} e
 \texttt{setPlayerState}, respetivamente. Realça-se nestas implementações que a forma de chamar um função em PostgreSQL é como realizar uma \textit{query} para a 
@@ -85,6 +92,61 @@ public Long totalPontosJogador(int idJogador) {
 }
 \end{minted}
 \captionof{listing}{Código da função totalPontosJogador\label{lst:totalPontosJogador}}
+
+\paragraph{Exercício 2f} Tal como as outras funções, esta é chamada através de uma \textit{query}. Este exercício pretende permitir saber quantos pontos um jogador
+obteve no total das suas partidas em vários jogos.
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public Long totalPontosJogador(int idJogador) {
+    String query = "SELECT totalPontos from totalPontosJogador(?1)";
+    Query functionQuery = em.createNativeQuery(query);
+    functionQuery.setParameter(1, idJogador);
+    return (Long) functionQuery.getSingleResult();
+}
+\end{minted}
+\captionof{listing}{Código da função totalPontosJogador\label{lst:totalPontosJogador}}
+
+\paragraph{Exercício 2g} Esta função é mais complexa que as outras devido ao facto de retornar uma tabela e não apenas um valor ou o resultado de uma operação e não
+há entidade para este resultado. Para resolver o problema é possível seguir várias opções: usar a função \texttt{getResultList} e colocar numa lista de arrays de objetos
+da classe \texttt{Object}, fazer duas queries, uma para os jogadores e outra para as pontuações e depois agrupá-las num objeto da classe \texttt{Map}, ou criar uma
+entidade apenas para os resultados desta função. A solução escolhida foi a primeira, tal como implementado na listagem~\ref{lst:PontosJogosPorJogador}
+\begin{minted}
+[
+    frame=lines,
+    framesep=2mm,
+    baselinestretch=1.2,
+    fontsize=\footnotesize,
+    linenos
+]
+{Java}
+public Map<Integer, BigDecimal> PontosJogosPorJogador(String gameName) {
+    String idJogo = getGameByName(gameName).getId();
+    String queryString = "SELECT jogadores, pontuacaoTotal from PontosJogosPorJogador(?1)";
+    Query query = em.createNativeQuery(queryString);
+    query.setParameter(1, idJogo);
+    Map<Integer, BigDecimal> map = new java.util.HashMap<>(Map.of());
+    List<Object[]> list  = query.getResultList();
+    for (Object[] obj : list) {
+        Integer idJogador = (Integer) obj[0];
+        BigDecimal points = (BigDecimal) obj[1];
+        map.put(idJogador,  points);
+    }
+    return map;
+}
+\end{minted}
+\captionof{listing}{Código da função PontosJogosPorJogador\label{lst:PontosJogosPorJogador}}
+
+%
+% Secção 3.1.2
+%
+\subsection{Procedimentos armazenados}\label{sec312}
 
 %
 % Secção 3.2
