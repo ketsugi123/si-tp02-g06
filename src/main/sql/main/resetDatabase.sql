@@ -139,7 +139,6 @@ begin
         (1, Jogo1 , '04-05-2023', 10),
         (2, Jogo2, '04-05-2023', 10);
 
-   
 
     INSERT INTO partida(jogo, dtinicio, dtfim, estado, regiao)
     VALUES
@@ -166,9 +165,6 @@ begin
         ('Pro player', Jogo1, 10, 'https://www.google.pt/?gws_rd=ssl'),
         ('Master', Jogo2, 10, 'https://www.google.pt/?gws_rd=ssl');
 
-    INSERT INTO cracha_jogador(cracha, jogador, jogo)
-    VALUES
-        ('Master', 2, Jogo2);
 
     INSERT INTO conversa(nome)
     VALUES
@@ -184,6 +180,7 @@ begin
 end;
 $$;
 
+select * from cracha_jogador;
 create or replace function createPlayer(username VARCHAR(20), email VARCHAR(80), regiao VARCHAR(5))
 RETURNS VARCHAR(30) 
 LANGUAGE plpgsql
